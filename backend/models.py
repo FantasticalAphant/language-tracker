@@ -1,7 +1,7 @@
 from sqlalchemy import Column, Integer, String, ForeignKey
 from sqlalchemy.orm import Relationship
 
-from database import Base
+from .database import Base
 
 
 # Other Column properties to consider include nullable and field size
