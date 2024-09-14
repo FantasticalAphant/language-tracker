@@ -14,7 +14,6 @@ MAX_LEVEL = 6
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 DICTIONARY_FILE = os.path.join(BASE_DIR, "resources", "hsk_lists")
-print(DICTIONARY_FILE)
 
 Session = sessionmaker(bind=engine)
 session = Session()
@@ -34,9 +33,9 @@ def populate_from_file(session, file_path):
     # 4 - definition
     for level in range(MIN_LEVEL, MAX_LEVEL + 1):
         with open(
-            os.path.join(BASE_DIR, "resources", "hsk_lists", f"hsk{level}.csv"),
-            mode="r",
-            encoding=ENCODING,
+                os.path.join(BASE_DIR, "resources", "hsk_lists", f"hsk{level}.csv"),
+                mode="r",
+                encoding=ENCODING,
         ) as f:
             csv_reader = csv.reader(f, delimiter="\t")
             for row in csv_reader:
