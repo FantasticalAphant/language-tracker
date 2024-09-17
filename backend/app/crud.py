@@ -1,6 +1,6 @@
 from sqlalchemy.orm import Session
 
-from . import models
+import models
 
 
 def get_words_by_level(db: Session, level: int, limit: int = 100, offset: int = 0):
