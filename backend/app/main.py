@@ -38,6 +38,14 @@ def get_hsk_level_words(level: int, db: Session = Depends(get_db), limit: int = 
     return hsk_level
 
 
+@router.get("/sentences", response_model=list[schemas.Sentence], tags=["sentences"])
+def get_sentences(db: Session = Depends(get_db), limit: int = 100, offset: int = 0):
+    sentences = crud.get_sentences(db, limit, offset)
+    if not sentences:
+        raise HTTPException(status_code=404, detail="Sentences not found")
+    return sentences
+
+
 @router.get("/hello/{name}")
 async def say_hello(name: str):
     return {"message": f"Hello {name}"}
