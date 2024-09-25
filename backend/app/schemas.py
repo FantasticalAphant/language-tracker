@@ -1,6 +1,17 @@
 from pydantic import BaseModel
 
 
+class Sentence(BaseModel):
+    text: str
+
+
+class Entry(BaseModel):
+    simplified: str
+    traditional: str
+    pinyin: str
+    definition: str
+
+
 class WordBase(BaseModel):
     simplified: str
     traditional: str
