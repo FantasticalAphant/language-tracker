@@ -1,5 +1,5 @@
 from sqlalchemy import Column, Integer, String, ForeignKey
-from sqlalchemy.orm import Relationship
+from sqlalchemy.orm import relationship
 
 from database import Base
 
@@ -34,7 +34,7 @@ class HSKLevel(Base):
     id = Column(Integer, primary_key=True, index=True)
     level = Column(Integer, unique=True, index=True)
     # TODO: find out what back_populates means
-    word = Relationship("Word", back_populates="level")
+    word = relationship("Word", back_populates="level")
 
     # TODO: add repr for printing
 
@@ -50,7 +50,7 @@ class Word(Base):
     # Create another class with level_id and level information?
     # These fields might also be redundant
     level_id = Column(Integer, ForeignKey("hsk_levels.id"))
-    level = Relationship("HSKLevel", back_populates="word")
+    level = relationship("HSKLevel", back_populates="word")
 
     def __repr__(self):
         return f"{self.simplified} ({self.traditional}) [{self.pinyin}] - {self.definition}"

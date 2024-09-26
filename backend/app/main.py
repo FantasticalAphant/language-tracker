@@ -11,6 +11,14 @@ tags_metadata = [
         "name": "word lists",
         "description": "List of HSK words",
     },
+    {
+        "name": "sentences",
+        "description": "List of example sentences"
+    },
+    {
+        "name": "dictionary",
+        "description": "List of dictionary entries"
+    }
 ]
 
 app = FastAPI(tags_metadata=tags_metadata)
@@ -44,6 +52,14 @@ def get_sentences(db: Session = Depends(get_db), limit: int = 100, offset: int =
     if not sentences:
         raise HTTPException(status_code=404, detail="Sentences not found")
     return sentences
+
+
+@router.get("/dictionary", response_model=list[schemas.Entry], tags=["dictionary"])
+def get_dictionary_entries(db: Session = Depends(get_db), limit: int = 100, offset: int = 0):
+    entries = crud.get_dictionary_entries(db, limit, offset)
+    if not entries:
+        raise HTTPException(status_code=404, detail="Dictionary entries not found")
+    return entries
 
 
 @router.get("/hello/{name}")

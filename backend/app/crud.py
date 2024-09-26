@@ -15,3 +15,12 @@ def get_words_by_level(db: Session, level: int, limit: int = 100, offset: int = 
         .offset(offset)
         .all()
     )
+
+
+def get_dictionary_entries(db: Session, limit: int = 100, offset: int = 0):
+    return (
+        db.query(models.Entry)
+        .limit(limit)
+        .offset(offset)
+        .all()
+    )
