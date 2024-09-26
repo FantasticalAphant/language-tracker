@@ -10,9 +10,9 @@ const user = {
 }
 const navigation = [
     {name: 'Dashboard', href: '/', current: false},
-    {name: 'Dictionary', href: '/dictionary', current: false},
+    {name: 'Dictionary', href: '#', current: true},
     {name: 'HSK Lists', href: '#', current: false},
-    {name: 'Sentences', href: '#', current: true},
+    {name: 'Sentences', href: '/sentences', current: false},
 ]
 const userNavigation = [
     {name: 'Your Profile', href: '#'},
@@ -25,11 +25,11 @@ function classNames(...classes) {
 }
 
 
-export default function SentencesPage() {
+export default function DictionaryPage() {
     const [data, setData] = useState([])
 
     useEffect(() => {
-        fetch("http://localhost:8000/sentences")
+        fetch("http://localhost:8000/dictionary")
             .then(res => res.json())
             .then(data => {
                 console.log(data)
@@ -188,14 +188,15 @@ export default function SentencesPage() {
                 <div className="py-10">
                     <header>
                         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-                            <h1 className="text-3xl font-bold leading-tight tracking-tight text-gray-900">Sentences</h1>
+                            <h1 className="text-3xl font-bold leading-tight tracking-tight text-gray-900">Dictionary</h1>
                         </div>
                     </header>
                     <main>
                         <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
-                            <ul>
+                            <ul className="list-disc">
                                 {data.map((item, index) => (
-                                    <li key={index}>{item.text}</li>
+                                    <li key={index}>{item.simplified} [{item.traditional}] ({item.pinyin})
+                                        - {item.definition}</li>
                                 ))}
                             </ul>
                         </div>
