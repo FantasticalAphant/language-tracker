@@ -11,7 +11,7 @@ const user = {
 const navigation = [
     {name: 'Dashboard', href: '/', current: false},
     {name: 'Dictionary', href: '#', current: true},
-    {name: 'HSK Lists', href: '#', current: false},
+    {name: 'HSK Lists', href: '/hsk_lists', current: false},
     {name: 'Sentences', href: '/sentences', current: false},
 ]
 const userNavigation = [

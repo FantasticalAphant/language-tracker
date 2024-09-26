@@ -3,6 +3,7 @@ import {BrowserRouter as Router, Route, Routes} from "react-router-dom";
 import HomePage from "./pages/HomePage.jsx";
 import SentencesPage from "./pages/SentencesPage.jsx";
 import DictionaryPage from "./pages/DictionaryPage.jsx";
+import HSKListsPage from "./pages/HSKListsPage.jsx";
 
 function App() {
     return (
@@ -13,8 +14,9 @@ function App() {
                     <Routes>
                         {/* Default Route */}
                         <Route path="/" element={<HomePage/>}/>
-                        <Route path={"/sentences"} element={<SentencesPage/>}/>
                         <Route path={"/dictionary"} element={<DictionaryPage/>}/>
+                        <Route path={"/hsk_lists"} element={<HSKListsPage/>}/>
+                        <Route path={"/sentences"} element={<SentencesPage/>}/>
                     </Routes>
                 </main>
             </div>
