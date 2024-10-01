@@ -33,6 +33,14 @@ tags_metadata = [
     {
         "name": "dictionary",
         "description": "List of dictionary entries"
+    },
+    {
+        "name": "analyzer",
+        "description": "Text analyzer"
+    },
+    {
+        "name": "translator",
+        "description": "Text translator"
     }
 ]
 
@@ -96,6 +104,23 @@ async def submit_text(input: TextInput):
 
         # Return a success message or any other response
         return {"message": "Text received successfully", "text": split_text}
+
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+# POST endpoint to receive text from the React form
+@router.post("/translator", tags=["translator"])
+async def submit_text(input: TextInput):
+    # Process the text here (e.g., save to database, etc.)
+    try:
+        received_text = input.text
+        translated_text = helpers.translate_text(received_text)
+        # Do something with received_text
+        print(f"Received text: {received_text}")
+
+        # Return a success message or any other response
+        return {"message": "Text received successfully", "text": translated_text}
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))

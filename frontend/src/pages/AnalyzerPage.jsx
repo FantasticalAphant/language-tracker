@@ -15,6 +15,7 @@ const navigation = [
     {name: 'HSK Lists', href: '/hsk_lists', current: false},
     {name: 'Sentences', href: '/sentences', current: false},
     {name: 'Analyzer', href: '#', current: true},
+    {name: 'Translator', href: '/translator', current: false}
 ]
 const userNavigation = [
     {name: 'Your Profile', href: '#'},
@@ -212,7 +213,8 @@ export default function AnalyzerPage() {
                     <main>
                         <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
                             <ul className="list-disc">
-                                <TextArea onTextSubmit={handleSubmit} text={text} setText={setText}/>
+                                <TextArea onTextSubmit={handleSubmit} text={text} setText={setText}
+                                          action={"analyze"}/>
                             </ul>
                         </div>
                     </main>

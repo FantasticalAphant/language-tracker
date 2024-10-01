@@ -1,6 +1,7 @@
 import {Disclosure, DisclosureButton, DisclosurePanel, Menu, MenuButton, MenuItem, MenuItems} from '@headlessui/react'
 import {Bars3Icon, BellIcon, XMarkIcon} from '@heroicons/react/24/outline'
-import {useEffect, useState} from "react";
+import {useState} from "react";
+import TextArea from "../components/TextArea.jsx";
 
 const user = {
     name: 'Tom Cook',
@@ -11,10 +12,10 @@ const user = {
 const navigation = [
     {name: 'Dashboard', href: '/', current: false},
     {name: 'Dictionary', href: '/dictionary', current: false},
-    {name: 'HSK Lists', href: '#', current: true},
+    {name: 'HSK Lists', href: '/hsk_lists', current: false},
     {name: 'Sentences', href: '/sentences', current: false},
     {name: 'Analyzer', href: '/analyzer', current: false},
-    {name: 'Translator', href: '/translator', current: false},
+    {name: 'Translator', href: '#', current: true}
 ]
 const userNavigation = [
     {name: 'Your Profile', href: '#'},
@@ -22,36 +23,39 @@ const userNavigation = [
     {name: 'Sign out', href: '#'},
 ]
 
-
-// TODO: make current change when the user clicks on a tab
-const tabs = [
-    {name: '1', href: '#', current: true, content: "1"},
-    {name: '2', href: '#', current: false, content: "2"},
-    {name: '3', href: '#', current: false, content: "3"},
-    {name: '4', href: '#', current: false, content: "4"},
-    {name: '5', href: '#', current: false, content: "5"},
-    {name: '6', href: '#', current: false, content: "6"},
-]
-
 function classNames(...classes) {
     return classes.filter(Boolean).join(' ')
 }
 
 
-export default function HSKListsPage() {
+export default function TranslatorPage() {
     const [data, setData] = useState([])
-    const [activeTab, setActiveTab] = useState(tabs.find((tab) => tab.current).name);
+    const [text, setText] = useState('');
 
-    useEffect(() => {
-        fetch(`http://localhost:8000/level/${tabs.find(tab => tab.name === activeTab).name}/words`)
-            .then(res => res.json())
-            .then(data => {
-                console.log(data)
-                setData(data)
-            })
-            .catch(err => console.log(err));
-    }, [activeTab]);
+    const handleSubmit = async (event) => {
+        event.preventDefault();
 
+        try {
+            const response = await fetch('http://localhost:8000/translator', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({text: text}),
+            });
+
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+
+            const data = await response.json();
+            console.log('Success:', data);
+            setData(data)
+            setText("");
+        } catch (error) {
+            console.error('Error:', error);
+        }
+    };
 
     return (
         <>
@@ -105,7 +109,7 @@ export default function HSKListsPage() {
                                 >
                                     <span className="absolute -inset-1.5"/>
                                     <span className="sr-only">View notifications</span>
-                                    <BellIcon aria-hidden="true" className="h-6 w-6"/>
+                                    <BellIcon aria-hidden="false" className="h-6 w-6"/>
                                 </button>
 
                                 {/* Profile dropdown */}
@@ -202,47 +206,19 @@ export default function HSKListsPage() {
                 <div className="py-10">
                     <header>
                         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-                            <h1 className="text-3xl font-bold leading-tight tracking-tight text-gray-900">HSK Lists</h1>
+                            <h1 className="text-3xl font-bold leading-tight tracking-tight text-gray-900">
+                                Translator (DeepL)</h1>
                         </div>
                     </header>
                     <main>
                         <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
-                            {/*section heading start*/}
-                            <div className="border-b border-gray-200">
-                                <div className="sm:flex sm:items-baseline">
-                                    <h3 className="text-base font-semibold leading-6 text-gray-900">Level</h3>
-                                    <div className="mt-4 sm:ml-10 sm:mt-0">
-                                        <nav className="-mb-px flex space-x-8">
-                                            {tabs.map((tab) => (
-                                                <a
-                                                    key={tab.name}
-                                                    href={tab.href}
-                                                    onClick={() => setActiveTab(tab.name)}
-                                                    aria-current={tab.name === activeTab ? 'page' : undefined}
-                                                    className={classNames(
-                                                        tab.name === activeTab
-                                                            ? 'border-indigo-500 text-indigo-600'
-                                                            : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700',
-                                                        'whitespace-nowrap border-b-2 px-1 pb-4 text-sm font-medium',
-                                                    )}
-                                                >
-                                                    {tab.name}
-                                                </a>
-                                            ))}
-                                        </nav>
-                                    </div>
-                                </div>
-                            </div>
-                            <div>
-                                <ul className="pt-3">
-                                    {data.map((item, index) => (
-                                        <li key={index}>{item.simplified} [{item.traditional}] ({item.pinyin})
-                                            - {item.definition}</li>
-                                    ))}
-                                </ul>
-                            </div>
+                            <ul className="list-disc">
+                                <TextArea onTextSubmit={handleSubmit} text={text} setText={setText}
+                                          action={"translate"}/>
+                            </ul>
                         </div>
                     </main>
+                    {data && data.text}
                 </div>
             </div>
         </>
