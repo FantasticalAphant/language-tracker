@@ -1,6 +1,7 @@
 import {Disclosure, DisclosureButton, DisclosurePanel, Menu, MenuButton, MenuItem, MenuItems} from '@headlessui/react'
 import {Bars3Icon, BellIcon, XMarkIcon} from '@heroicons/react/24/outline'
-import {useEffect, useState} from "react";
+import {useState} from "react";
+import TextArea from "../components/TextArea.jsx";
 
 const user = {
     name: 'Tom Cook',
@@ -10,10 +11,10 @@ const user = {
 }
 const navigation = [
     {name: 'Dashboard', href: '/', current: false},
-    {name: 'Dictionary', href: '#', current: true},
+    {name: 'Dictionary', href: '/dictionary', current: false},
     {name: 'HSK Lists', href: '/hsk_lists', current: false},
     {name: 'Sentences', href: '/sentences', current: false},
-    {name: 'Analyzer', href: '/analyzer', current: false},
+    {name: 'Analyzer', href: '#', current: true},
 ]
 const userNavigation = [
     {name: 'Your Profile', href: '#'},
@@ -26,19 +27,34 @@ function classNames(...classes) {
 }
 
 
-export default function DictionaryPage() {
+export default function AnalyzerPage() {
     const [data, setData] = useState([])
+    const [text, setText] = useState('');
 
-    useEffect(() => {
-        fetch("http://localhost:8000/dictionary")
-            .then(res => res.json())
-            .then(data => {
-                console.log(data)
-                setData(data)
-            })
-            .catch(err => console.log(err));
-    }, []);
+    const handleSubmit = async (event) => {
+        event.preventDefault();
 
+        try {
+            const response = await fetch('http://localhost:8000/analyzer', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({text: text}),
+            });
+
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+
+            const data = await response.json();
+            console.log('Success:', data);
+            setData(data)
+            setText("");
+        } catch (error) {
+            console.error('Error:', error);
+        }
+    };
 
     return (
         <>
@@ -189,19 +205,18 @@ export default function DictionaryPage() {
                 <div className="py-10">
                     <header>
                         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-                            <h1 className="text-3xl font-bold leading-tight tracking-tight text-gray-900">Dictionary</h1>
+                            <h1 className="text-3xl font-bold leading-tight tracking-tight text-gray-900">Text
+                                Analyzer</h1>
                         </div>
                     </header>
                     <main>
                         <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
                             <ul className="list-disc">
-                                {data.map((item, index) => (
-                                    <li key={index}>{item.simplified} [{item.traditional}] ({item.pinyin})
-                                        - {item.definition}</li>
-                                ))}
+                                <TextArea onTextSubmit={handleSubmit} text={text} setText={setText}/>
                             </ul>
                         </div>
                     </main>
+                    {data && JSON.stringify(data.text)}
                 </div>
             </div>
         </>

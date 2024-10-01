@@ -13,6 +13,7 @@ const navigation = [
     {name: 'Dictionary', href: '/dictionary', current: false},
     {name: 'HSK Lists', href: '#', current: true},
     {name: 'Sentences', href: '/sentences', current: false},
+    {name: 'Analyzer', href: '/analyzer', current: false},
 ]
 const userNavigation = [
     {name: 'Your Profile', href: '#'},

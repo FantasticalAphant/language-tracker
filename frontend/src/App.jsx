@@ -4,6 +4,7 @@ import HomePage from "./pages/HomePage.jsx";
 import SentencesPage from "./pages/SentencesPage.jsx";
 import DictionaryPage from "./pages/DictionaryPage.jsx";
 import HSKListsPage from "./pages/HSKListsPage.jsx";
+import AnalyzerPage from "./pages/AnalyzerPage.jsx";
 
 function App() {
     return (
@@ -17,6 +18,7 @@ function App() {
                         <Route path={"/dictionary"} element={<DictionaryPage/>}/>
                         <Route path={"/hsk_lists"} element={<HSKListsPage/>}/>
                         <Route path={"/sentences"} element={<SentencesPage/>}/>
+                        <Route path={"/analyzer"} element={<AnalyzerPage/>}/>
                     </Routes>
                 </main>
             </div>

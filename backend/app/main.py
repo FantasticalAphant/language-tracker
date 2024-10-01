@@ -1,10 +1,25 @@
+import os
+from pathlib import Path
+
+import jieba
 from fastapi import FastAPI, APIRouter, Depends, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+from pydantic import BaseModel
 from sqlalchemy.orm import Session
 
 import crud
+import helpers
 import schemas
 from database import get_db
+
+# Set up file paths for jieba
+BASE_DIR = Path(__file__).resolve().parent.parent
+DICTIONARY_FILE = os.path.join(BASE_DIR, "resources", "dict.txt.big")
+
+# initialize jieba on startup
+jieba.setLogLevel(20)  # don't print initialization information
+jieba.set_dictionary(DICTIONARY_FILE)
+jieba.initialize()
 
 tags_metadata = [
     {
@@ -46,6 +61,8 @@ def get_hsk_level_words(level: int, db: Session = Depends(get_db), limit: int = 
     return hsk_level
 
 
+# TODO: allow the user to search for characters in a string
+# Also, try to normalize simplified and traditional characters
 @router.get("/sentences", response_model=list[schemas.Sentence], tags=["sentences"])
 def get_sentences(db: Session = Depends(get_db), limit: int = 100, offset: int = 0):
     sentences = crud.get_sentences(db, limit, offset)
@@ -60,6 +77,28 @@ def get_dictionary_entries(db: Session = Depends(get_db), limit: int = 100, offs
     if not entries:
         raise HTTPException(status_code=404, detail="Dictionary entries not found")
     return entries
+
+
+# Define a Pydantic model for the request body
+class TextInput(BaseModel):
+    text: str
+
+
+# POST endpoint to receive text from the React form
+@router.post("/analyzer", tags=["analyzer"])
+async def submit_text(input: TextInput):
+    # Process the text here (e.g., save to database, etc.)
+    try:
+        received_text = input.text
+        split_text = helpers.split_text(received_text)
+        # Do something with received_text
+        print(f"Received text: {received_text}")
+
+        # Return a success message or any other response
+        return {"message": "Text received successfully", "text": split_text}
+
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
 
 @router.get("/hello/{name}")
