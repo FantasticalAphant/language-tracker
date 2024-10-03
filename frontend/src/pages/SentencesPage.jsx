@@ -15,6 +15,7 @@ const navigation = [
     {name: 'Sentences', href: '#', current: true},
     {name: 'Analyzer', href: '/analyzer', current: false},
     {name: 'Translator', href: '/translator', current: false},
+    {name: 'Word Lists', href: '/word_lists', current: false},
 ]
 const userNavigation = [
     {name: 'Your Profile', href: '#'},

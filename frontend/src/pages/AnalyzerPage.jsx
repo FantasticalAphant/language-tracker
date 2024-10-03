@@ -15,7 +15,8 @@ const navigation = [
     {name: 'HSK Lists', href: '/hsk_lists', current: false},
     {name: 'Sentences', href: '/sentences', current: false},
     {name: 'Analyzer', href: '#', current: true},
-    {name: 'Translator', href: '/translator', current: false}
+    {name: 'Translator', href: '/translator', current: false},
+    {name: 'Word Lists', href: '/word_lists', current: false},
 ]
 const userNavigation = [
     {name: 'Your Profile', href: '#'},
