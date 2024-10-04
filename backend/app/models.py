@@ -1,7 +1,14 @@
-from sqlalchemy import Column, Integer, String, ForeignKey
+from sqlalchemy import Column, Integer, String, ForeignKey, DateTime, Table
 from sqlalchemy.orm import relationship
 
 from database import Base
+
+# Association table for dictionary entries and user-defined vocab lists
+wordlist_entries = Table(
+    "wordlist_entries", Base.metadata,
+    Column("wordlist_id", Integer, ForeignKey("wordlists.id"), primary_key=True),
+    Column("entry_id", Integer, ForeignKey("entries.id"), primary_key=True),
+)
 
 
 # Create your models here.
@@ -23,6 +30,8 @@ class Entry(Base):
     traditional = Column(String, index=True)
     pinyin = Column(String, index=True)
     definition = Column(String, index=True)
+
+    word_lists = relationship("WordList", secondary=wordlist_entries, back_populates="entries")
 
     def __repr__(self):
         return f"{self.simplified} ({self.traditional}) {self.pinyin} - {self.definition}"
@@ -54,3 +63,14 @@ class Word(Base):
 
     def __repr__(self):
         return f"{self.simplified} ({self.traditional}) [{self.pinyin}] - {self.definition}"
+
+
+class WordList(Base):
+    __tablename__ = "wordlists"
+    id = Column(Integer, primary_key=True, index=True)
+    name = Column(String, index=True)
+    time_modified = Column(DateTime, index=True)
+    time_created = Column(DateTime, index=True)
+    # TODO: add user column after OAuth2 is implemented
+
+    entries = relationship("Entry", secondary=wordlist_entries, back_populates="word_lists")

@@ -1,3 +1,5 @@
+import datetime
+
 from pydantic import BaseModel
 
 
@@ -32,6 +34,21 @@ class HSKLevel(BaseModel):
     id: int
     level: int
     words: list[Word]
+
+    class Config:
+        from_attributes = True
+
+
+class WordListUpdate(BaseModel):
+    name: str
+
+
+class WordList(BaseModel):
+    id: int
+    name: str
+    time_modified: datetime.datetime
+    time_created: datetime.datetime
+    entries: list[Entry]
 
     class Config:
         from_attributes = True

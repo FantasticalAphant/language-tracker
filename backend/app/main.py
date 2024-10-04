@@ -41,7 +41,11 @@ tags_metadata = [
     {
         "name": "translator",
         "description": "Text translator"
-    }
+    },
+    {
+        "name": "user lists",
+        "description": "User-created vocabulary lists",
+    },
 ]
 
 app = FastAPI(tags_metadata=tags_metadata)
@@ -54,11 +58,6 @@ app.add_middleware(
     allow_headers=["*"],
 )
 router = APIRouter()
-
-
-@router.get("/")
-async def root():
-    return {"message": "Hello World"}
 
 
 @router.get("/level/{level}/words", response_model=list[schemas.Word], tags=["word_lists"])
@@ -94,10 +93,10 @@ class TextInput(BaseModel):
 
 # POST endpoint to receive text from the React form
 @router.post("/analyzer", tags=["analyzer"])
-async def submit_text(input: TextInput):
+async def submit_text(user_input: TextInput):
     # Process the text here (e.g., save to database, etc.)
     try:
-        received_text = input.text
+        received_text = user_input.text
         split_text = helpers.split_text(received_text)
         # Do something with received_text
         print(f"Received text: {received_text}")
@@ -111,10 +110,10 @@ async def submit_text(input: TextInput):
 
 # POST endpoint to receive text from the React form
 @router.post("/translator", tags=["translator"])
-async def submit_text(input: TextInput):
+async def submit_text(user_input: TextInput):
     # Process the text here (e.g., save to database, etc.)
     try:
-        received_text = input.text
+        received_text = user_input.text
         translated_text = helpers.translate_text(received_text)
         # Do something with received_text
         print(f"Received text: {received_text}")
@@ -126,9 +125,17 @@ async def submit_text(input: TextInput):
         raise HTTPException(status_code=500, detail=str(e))
 
 
-@router.get("/hello/{name}")
-async def say_hello(name: str):
-    return {"message": f"Hello {name}"}
+@router.post("/wordlists/", response_model=schemas.WordList, tags=["wordlists"])
+def create_wordlist(wordlist: schemas.WordListUpdate, db: Session = Depends(get_db)):
+    return crud.create_word_list(db, name=wordlist.name)
+
+
+@router.get("/wordlists/{wordlist_id}", response_model=schemas.WordList, tags=["wordlists"])
+def read_wordlist(wordlist_id: int, db: Session = Depends(get_db)):
+    db_wordlist = crud.get_word_list(db, wordlist_id=wordlist_id)
+    if db_wordlist is None:
+        raise HTTPException(status_code=404, detail="Wordlist not found")
+    return db_wordlist
 
 
 app.include_router(router)
