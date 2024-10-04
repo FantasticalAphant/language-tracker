@@ -22,7 +22,7 @@ export default function TextArea({onTextSubmit, text, setText, action}) {
             <div className="min-w-0 flex-1">
                 <form onSubmit={onTextSubmit} className="relative">
                     <div
-                        className="overflow-hidden rounded-lg shadow-sm ring-1 ring-inset ring-gray-300 focus-within:ring-2 focus-within:ring-indigo-600">
+                        className="overflow-hidden rounded-lg shadow-sm ring-1 ring-inset ring-gray-300 focus-within:ring-2">
                         <label htmlFor="comment" className="sr-only">
                             Text to {action}
                         </label>
