@@ -1,6 +1,7 @@
 import {Disclosure, DisclosureButton, DisclosurePanel, Menu, MenuButton, MenuItem, MenuItems} from '@headlessui/react'
 import {Bars3Icon, BellIcon, XMarkIcon} from '@heroicons/react/24/outline'
 import {useEffect, useState} from "react";
+import List from "../components/List.jsx";
 
 const user = {
     name: 'Tom Cook',
@@ -236,10 +237,7 @@ export default function HSKListsPage() {
                             </div>
                             <div>
                                 <ul className="pt-3">
-                                    {data.map((item, index) => (
-                                        <li key={index}>{item.simplified} [{item.traditional}] ({item.pinyin})
-                                            - {item.definition}</li>
-                                    ))}
+                                    <List words={data}/>
                                 </ul>
                             </div>
                         </div>
