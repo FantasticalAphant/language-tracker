@@ -7,6 +7,7 @@ import HSKListsPage from "./pages/HSKListsPage.jsx";
 import AnalyzerPage from "./pages/AnalyzerPage.jsx";
 import TranslatorPage from "./pages/TranslatorPage.jsx";
 import WordListsPage from "./pages/WordListsPage.jsx";
+import NotFoundPage from "./pages/NotFoundPage.jsx";
 
 function App() {
     return (
@@ -16,6 +17,7 @@ function App() {
                 <main>
                     <Routes>
                         {/* Default Route */}
+                        <Route path='*' element={<NotFoundPage/>}/>
                         <Route path="/" element={<HomePage/>}/>
                         <Route path={"/dictionary"} element={<DictionaryPage/>}/>
                         <Route path={"/hsk_lists"} element={<HSKListsPage/>}/>
