@@ -55,6 +55,10 @@ def create_word_list(db: Session, name: str):
 def get_word_list(db: Session, wordlist_id: int):
     return db.query(models.WordList).filter(models.WordList.id == wordlist_id).first()
 
+
+def get_word_lists(db: Session):
+    return db.query(models.WordList).all()
+
 # def update_word_list(db: Session, wordlist_id: int, entry_ids: list[int]):
 #     wordlist = get_word_list(db, wordlist_id)
 #

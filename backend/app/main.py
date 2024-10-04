@@ -138,4 +138,12 @@ def read_wordlist(wordlist_id: int, db: Session = Depends(get_db)):
     return db_wordlist
 
 
+@router.get("/wordlists/", response_model=list[schemas.WordList], tags=["wordlists"])
+def read_wordlists(db: Session = Depends(get_db)):
+    db_wordlists = crud.get_word_lists(db)
+    if db_wordlists is None:
+        raise HTTPException(status_code=404, detail="Wordlists not found")
+    return db_wordlists
+
+
 app.include_router(router)
