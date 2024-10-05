@@ -27,12 +27,12 @@ const userNavigation = [
 
 // TODO: make current change when the user clicks on a tab
 const tabs = [
-    {name: '1', href: '#', current: true, content: "1"},
-    {name: '2', href: '#', current: false, content: "2"},
-    {name: '3', href: '#', current: false, content: "3"},
-    {name: '4', href: '#', current: false, content: "4"},
-    {name: '5', href: '#', current: false, content: "5"},
-    {name: '6', href: '#', current: false, content: "6"},
+    {name: 1, current: true},
+    {name: 2, current: false},
+    {name: 3, current: false},
+    {name: 4, current: false},
+    {name: 5, current: false},
+    {name: 6, current: false},
 ]
 
 function classNames(...classes) {
@@ -42,17 +42,17 @@ function classNames(...classes) {
 
 export default function HSKListsPage() {
     const [data, setData] = useState([])
-    const [activeTab, setActiveTab] = useState(tabs.find((tab) => tab.current).name);
+    const [activeTab, setActiveTab] = useState(1);
 
     useEffect(() => {
-        fetch(`http://localhost:8000/level/${tabs.find(tab => tab.name === activeTab).name}/words`)
+        fetch(`http://localhost:8000/level/${activeTab}/words`)
             .then(res => res.json())
             .then(data => {
                 console.log(data)
                 setData(data)
             })
             .catch(err => console.log(err));
-    }, [activeTab]);
+    }, [activeTab, data]);
 
 
     return (
@@ -211,28 +211,33 @@ export default function HSKListsPage() {
                         <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
                             {/*section heading start*/}
                             <div className="border-b border-gray-200">
-                                <div className="sm:flex sm:items-baseline">
-                                    <h3 className="text-base font-semibold leading-6 text-gray-900">Level</h3>
-                                    <div className="mt-4 sm:ml-10 sm:mt-0">
-                                        <nav className="-mb-px flex space-x-8">
-                                            {tabs.map((tab) => (
-                                                <a
-                                                    key={tab.name}
-                                                    href={tab.href}
-                                                    onClick={() => setActiveTab(tab.name)}
-                                                    aria-current={tab.name === activeTab ? 'page' : undefined}
-                                                    className={classNames(
-                                                        tab.name === activeTab
-                                                            ? 'border-indigo-500 text-indigo-600'
-                                                            : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700',
-                                                        'whitespace-nowrap border-b-2 px-1 pb-4 text-sm font-medium',
-                                                    )}
-                                                >
-                                                    {tab.name}
-                                                </a>
-                                            ))}
-                                        </nav>
+                                <div className="sm:flex sm:items-baseline justify-between">
+                                    <div className="sm:flex sm:items-baseline">
+                                        <h3 className="text-base font-semibold leading-6 text-gray-900">Level</h3>
+                                        <div className="mt-4 sm:ml-10 sm:mt-0">
+                                            <nav className="-mb-px flex space-x-8">
+                                                {tabs.map((tab) => (
+                                                    <a
+                                                        key={tab.name}
+                                                        href={"javascript:;"}
+                                                        onClick={() => setActiveTab(tab.name)}
+                                                        aria-current={tab.name === activeTab ? 'page' : undefined}
+                                                        className={classNames(
+                                                            tab.name === activeTab
+                                                                ? 'border-indigo-500 text-indigo-600'
+                                                                : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700',
+                                                            'whitespace-nowrap border-b-2 px-1 pb-4 text-sm font-medium',
+                                                        )}
+                                                    >
+                                                        {tab.name}
+                                                    </a>
+                                                ))}
+                                            </nav>
+                                        </div>
                                     </div>
+                                    <span className="inline-flex items-center rounded-md bg-blue-50 px-2 py-1 text-xs font-medium text-blue-700 ring-1 ring-inset ring-blue-700/10 ml-auto">
+        {data.length} Words
+      </span>
                                 </div>
                             </div>
                             <div>
