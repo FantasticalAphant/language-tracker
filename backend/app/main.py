@@ -61,8 +61,8 @@ router = APIRouter()
 
 
 @router.get("/level/{level}/words", response_model=list[schemas.Word], tags=["word_lists"])
-def get_hsk_level_words(level: int, db: Session = Depends(get_db), limit: int = 100, offset: int = 0):
-    hsk_level = crud.get_words_by_level(db, level, limit, offset)
+def get_hsk_level_words(level: int, db: Session = Depends(get_db)):
+    hsk_level = crud.get_words_by_level(db, level)
     if not hsk_level:
         raise HTTPException(status_code=404, detail="HSK Level not found")
     return hsk_level
