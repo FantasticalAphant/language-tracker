@@ -24,6 +24,7 @@ session = Session()
 
 
 def create_tables():
+    Base.metadata.drop_all(engine)
     print("Creating database...")
     Base.metadata.create_all(engine)
 
@@ -98,11 +99,12 @@ def _parse_entry(line: str) -> tuple[str, str, list[str], list[str]] | None:
     return simplified, traditional, pronunciation, definition
 
 
-def populate_dictionary(session):
+def populate_dictionary(session, batch_size=3000):
     # File source: https://www.mdbg.net/chinese/dictionary?page=cc-cedict
 
     print("Importing dictionary...")
     with open(DICTIONARY_FILE, "rt") as file:
+        batch = []
         for line in file:
             if line.startswith("#"):
                 continue  # ignore comments at the beginning of the file
@@ -116,19 +118,29 @@ def populate_dictionary(session):
                               traditional=traditional,
                               pinyin=json.dumps(pronunciation),
                               definition=json.dumps(definition))
-                session.add(entry)
+                batch.append(entry)
+                if len(batch) >= batch_size:
+                    session.bulk_save_objects(batch)
+                    batch.clear()
+        if batch:
+            session.bulk_save_objects(batch)
 
     session.commit()
 
 
-def populate_sentences(session):
+def populate_sentences(session, batch_size=1000):
     """Store sentences from file into database"""
     # Source: https://tatoeba.org/en/downloads
 
     with open(SENTENCES_FILE, "rt") as file:
+        batch = []
         for line in file:
-            sentence = Sentence(text=line.strip())
-            session.add(sentence)
+            batch.append(Sentence(text=line.strip()))
+            if len(batch) >= batch_size:
+                session.bulk_save_objects(batch)
+                batch.clear()
+        if batch:
+            session.bulk_save_objects(batch)
 
     session.commit()
 
