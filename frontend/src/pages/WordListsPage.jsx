@@ -30,8 +30,27 @@ function classNames(...classes) {
 
 
 export default function WordListsPage() {
-    const [data, setData] = useState([])
+    const [data, setData] = useState([]);
+    const [name, setName] = useState("");
     const [isLoading, setIsLoading] = useState(false);
+
+    async function handleSubmit(event) {
+        event.preventDefault();
+        setName("");
+        const response = await fetch("http://localhost:8000/wordlists/", {
+                method: "POST",
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({name: name}),
+            }
+        )
+
+        const data = await response.json();
+
+        setData(prevData => [...prevData, data]);
+        console.log(data);
+    }
 
     useEffect(() => {
         setIsLoading(true);
@@ -207,6 +226,25 @@ export default function WordListsPage() {
                         </div>
                     </main>
                 </div>
+                <form onSubmit={handleSubmit}>
+                    <div className="flex justify-end space-x-2 pr-3">
+                        <input
+                            id="name"
+                            name="name"
+                            type="text"
+                            value={name}
+                            onChange={(event) => setName(event.target.value)}
+                            placeholder="List Name"
+                            className="block w-40 border-2 px-1 text-gray-900 placeholder:text-gray-400 focus:ring-0 sm:text-sm sm:leading-6"
+                        />
+                        <button
+                            type="submit"
+                            className="rounded-md bg-indigo-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                        >
+                            Create New List
+                        </button>
+                    </div>
+                </form>
             </div>
         </>
     )
