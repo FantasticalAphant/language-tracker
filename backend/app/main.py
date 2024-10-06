@@ -71,8 +71,8 @@ def get_hsk_level_words(level: int, db: Session = Depends(get_db)):
 # TODO: allow the user to search for characters in a string
 # Also, try to normalize simplified and traditional characters
 @router.get("/sentences", response_model=list[schemas.Sentence], tags=["sentences"])
-def get_sentences(db: Session = Depends(get_db), limit: int = 100, offset: int = 0):
-    sentences = crud.get_sentences(db, limit, offset)
+def get_sentences(db: Session = Depends(get_db), limit: int = 100, offset: int = 0, keyword: str = None):
+    sentences = crud.get_sentences(db, limit, offset, keyword)
     if not sentences:
         raise HTTPException(status_code=404, detail="Sentences not found")
     return sentences

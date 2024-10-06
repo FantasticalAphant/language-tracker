@@ -5,18 +5,17 @@ from sqlalchemy.orm import Session
 import models
 
 
-def get_sentences(db: Session, limit: int = 100, offset: int = 0):
+def get_sentences(db: Session, limit: int = 100, offset: int = 0, keyword: str = None):
+    if keyword:
+        return (
+            db.query(models.Sentence)
+            .filter(models.Sentence.text.contains(keyword))
+            .limit(limit)
+            .offset(offset)
+            .all()
+        )
+
     return db.query(models.Sentence).offset(offset).limit(limit).all()
-
-
-# def get_sentences_by_keyword(db: Session, keyword: str, limit: int = 100, offset: int = 0):
-#     return (
-#         db.query(models.Sentence)
-#         .filter(models.Sentence.text.contains(keyword))
-#         .limit(limit)
-#         .offset(offset)
-#         .all()
-#     )
 
 
 def get_words_by_level(db: Session, level: int):

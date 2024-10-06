@@ -1,5 +1,15 @@
-import {Disclosure, DisclosureButton, DisclosurePanel, Menu, MenuButton, MenuItem, MenuItems} from '@headlessui/react'
-import {Bars3Icon, BellIcon, XMarkIcon} from '@heroicons/react/24/outline'
+import {
+    Combobox,
+    ComboboxInput,
+    Disclosure,
+    DisclosureButton,
+    DisclosurePanel,
+    Menu,
+    MenuButton,
+    MenuItem,
+    MenuItems
+} from '@headlessui/react'
+import {Bars3Icon, BellIcon, MagnifyingGlassIcon, XMarkIcon} from '@heroicons/react/24/outline'
 import {useEffect, useState} from "react";
 
 const user = {
@@ -29,17 +39,27 @@ function classNames(...classes) {
 
 
 export default function SentencesPage() {
-    const [data, setData] = useState([])
+    const [data, setData] = useState([]);
+    const [query, setQuery] = useState("");
 
     useEffect(() => {
-        fetch("http://localhost:8000/sentences")
-            .then(res => res.json())
-            .then(data => {
-                console.log(data)
-                setData(data)
-            })
-            .catch(err => console.log(err));
-    }, []);
+        const fetchData = async () => {
+            try {
+                const response = await fetch(
+                    query
+                        ? `http://localhost:8000/sentences?keyword=${query}`
+                        : "http://localhost:8000/sentences"
+                );
+                const result = await response.json();
+                console.log(result);
+                setData(result);
+            } catch (error) {
+                console.log("Error fetching data:", error);
+            }
+        };
+
+        fetchData();
+    }, [query]);
 
 
     return (
@@ -193,11 +213,25 @@ export default function SentencesPage() {
                         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
                             <h1 className="text-3xl font-bold leading-tight tracking-tight text-gray-900">Sentences</h1>
                         </div>
+                        <Combobox>
+                            <div className="relative">
+                                <MagnifyingGlassIcon
+                                    className="pointer-events-none absolute left-4 top-3.5 h-5 w-5 text-gray-400"
+                                    aria-hidden="true"
+                                />
+                                <ComboboxInput
+                                    autoFocus
+                                    className="h-12 w-full border-0 bg-transparent pl-11 pr-4 text-gray-900 placeholder:text-gray-400 focus:ring-0 sm:text-sm"
+                                    placeholder="Search..."
+                                    onChange={(event) => setQuery(event.target.value)}
+                                />
+                            </div>
+                        </Combobox>
                     </header>
                     <main>
                         <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
                             <ul>
-                                {data.map((item, index) => (
+                                {Array.isArray(data) && data.map((item, index) => (
                                     <li key={index}>{item.text}</li>
                                 ))}
                             </ul>
