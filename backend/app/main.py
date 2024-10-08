@@ -1,7 +1,9 @@
 import os
+import pickle
 from pathlib import Path
 
 import jieba
+import redis
 from fastapi import FastAPI, APIRouter, Depends, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
@@ -26,29 +28,20 @@ tags_metadata = [
         "name": "word lists",
         "description": "List of HSK words",
     },
-    {
-        "name": "sentences",
-        "description": "List of example sentences"
-    },
-    {
-        "name": "dictionary",
-        "description": "List of dictionary entries"
-    },
-    {
-        "name": "analyzer",
-        "description": "Text analyzer"
-    },
-    {
-        "name": "translator",
-        "description": "Text translator"
-    },
+    {"name": "sentences", "description": "List of example sentences"},
+    {"name": "dictionary", "description": "List of dictionary entries"},
+    {"name": "analyzer", "description": "Text analyzer"},
+    {"name": "translator", "description": "Text translator"},
     {
         "name": "user lists",
         "description": "User-created vocabulary lists",
     },
 ]
 
+
 app = FastAPI(tags_metadata=tags_metadata)
+
+r = redis.Redis(host="localhost", port=6379, db=0)
 
 app.add_middleware(
     CORSMiddleware,
@@ -60,18 +53,33 @@ app.add_middleware(
 router = APIRouter()
 
 
-@router.get("/level/{level}/words", response_model=list[schemas.Word], tags=["word_lists"])
+@router.get(
+    "/level/{level}/words", response_model=list[schemas.Word], tags=["word_lists"]
+)
 def get_hsk_level_words(level: int, db: Session = Depends(get_db)):
+    cache_key = f"hsk_level_{level}"
+    cached_result = r.get(cache_key)
+
+    if cached_result:
+        return pickle.loads(cached_result)
+
     hsk_level = crud.get_words_by_level(db, level)
     if not hsk_level:
         raise HTTPException(status_code=404, detail="HSK Level not found")
+
+    r.setex(cache_key, 3600, pickle.dumps(hsk_level))
     return hsk_level
 
 
 # TODO: allow the user to search for characters in a string
 # Also, try to normalize simplified and traditional characters
 @router.get("/sentences", response_model=list[schemas.Sentence], tags=["sentences"])
-def get_sentences(db: Session = Depends(get_db), limit: int = 100, offset: int = 0, keyword: str = None):
+def get_sentences(
+    db: Session = Depends(get_db),
+    limit: int = 100,
+    offset: int = 0,
+    keyword: str = None,
+):
     sentences = crud.get_sentences(db, limit, offset, keyword)
     if not sentences:
         raise HTTPException(status_code=404, detail="Sentences not found")
@@ -79,7 +87,9 @@ def get_sentences(db: Session = Depends(get_db), limit: int = 100, offset: int =
 
 
 @router.get("/dictionary", response_model=list[schemas.Entry], tags=["dictionary"])
-def get_dictionary_entries(db: Session = Depends(get_db), limit: int = 100, offset: int = 0):
+def get_dictionary_entries(
+    db: Session = Depends(get_db), limit: int = 100, offset: int = 0
+):
     entries = crud.get_dictionary_entries(db, limit, offset)
     if not entries:
         raise HTTPException(status_code=404, detail="Dictionary entries not found")
@@ -93,7 +103,7 @@ class TextInput(BaseModel):
 
 # POST endpoint to receive text from the React form
 @router.post("/analyzer", tags=["analyzer"])
-async def submit_text(user_input: TextInput):
+def submit_text(user_input: TextInput):
     # Process the text here (e.g., save to database, etc.)
     try:
         received_text = user_input.text
@@ -110,7 +120,7 @@ async def submit_text(user_input: TextInput):
 
 # POST endpoint to receive text from the React form
 @router.post("/translator", tags=["translator"])
-async def submit_text(user_input: TextInput):
+def submit_text(user_input: TextInput):
     # Process the text here (e.g., save to database, etc.)
     try:
         received_text = user_input.text
@@ -130,7 +140,9 @@ def create_wordlist(wordlist: schemas.WordListUpdate, db: Session = Depends(get_
     return crud.create_word_list(db, name=wordlist.name)
 
 
-@router.get("/wordlists/{wordlist_id}", response_model=schemas.WordList, tags=["wordlists"])
+@router.get(
+    "/wordlists/{wordlist_id}", response_model=schemas.WordList, tags=["wordlists"]
+)
 def read_wordlist(wordlist_id: int, db: Session = Depends(get_db)):
     db_wordlist = crud.get_word_list(db, wordlist_id=wordlist_id)
     if db_wordlist is None:
