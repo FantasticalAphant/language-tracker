@@ -2,6 +2,7 @@ import {Disclosure, DisclosureButton, DisclosurePanel, Menu, MenuButton, MenuIte
 import {Bars3Icon, BellIcon, XMarkIcon} from '@heroicons/react/24/outline'
 import {useEffect, useState} from "react";
 import List from "../components/List.jsx";
+import PaginationFooter from "../components/PaginationFooter.jsx";
 
 const user = {
     name: 'Tom Cook',
@@ -202,6 +203,7 @@ export default function DictionaryPage() {
                         </div>
                     </main>
                 </div>
+                <PaginationFooter totalResults={100} resultsPerPage={10} currentPage={3}/>
             </div>
         </>
     )
