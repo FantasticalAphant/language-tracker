@@ -23,6 +23,7 @@ jieba.setLogLevel(20)  # don't print initialization information
 jieba.set_dictionary(DICTIONARY_FILE)
 jieba.initialize()
 
+# Create some tags to group up endpoints at /docs
 tags_metadata = [
     {
         "name": "word lists",
@@ -41,8 +42,10 @@ tags_metadata = [
 
 app = FastAPI(tags_metadata=tags_metadata)
 
+# Use redis to cache HSK lists
 r = redis.Redis(host="localhost", port=6379, db=0)
 
+# Enable CORS
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["http://localhost:3000"],  # here
@@ -104,7 +107,6 @@ class TextInput(BaseModel):
 # POST endpoint to receive text from the React form
 @router.post("/analyzer", tags=["analyzer"])
 def submit_text(user_input: TextInput):
-    # Process the text here (e.g., save to database, etc.)
     try:
         received_text = user_input.text
         split_text = helpers.split_text(received_text)

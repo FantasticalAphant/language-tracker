@@ -11,6 +11,7 @@ from models import Word, Entry, Sentence
 
 ENCODING = "utf-8-sig"  # BOM (byte order mark)
 
+# Min and Max levels for HSK lists
 MIN_LEVEL = 1
 MAX_LEVEL = 6
 
@@ -24,7 +25,8 @@ session = Session()
 
 
 def create_tables():
-    Base.metadata.drop_all(engine)
+    # TODO: update entries instead (using alembic or something similar)
+    Base.metadata.drop_all(engine)  # delete all previous entries to prevent duplicates
     print("Creating database...")
     Base.metadata.create_all(engine)
 
@@ -37,10 +39,11 @@ def populate_hsk_lists(session):
     # 3 - pinyin with tone marks
     # 4 - definition
     for level in range(MIN_LEVEL, MAX_LEVEL + 1):
+        # go through each HSK file and populate the database
         with open(
-                os.path.join(HSK_LIST_DIR, f"hsk{level}.csv"),
-                mode="r",
-                encoding=ENCODING,
+            os.path.join(HSK_LIST_DIR, f"hsk{level}.csv"),
+            mode="r",
+            encoding=ENCODING,
         ) as f:
             csv_reader = csv.reader(f, delimiter="\t")
             for row in csv_reader:
@@ -67,7 +70,7 @@ def _parse_rest(line: str) -> tuple[list[str], list[str]]:
     # definition inside slashes
     if m is not None:
         pronunciations = m.groups()[0].split()  # pronunciations
-        definitions = m.groups()[1].split('/')  # definitions
+        definitions = m.groups()[1].split("/")  # definitions
         return pronunciations, definitions
     raise SystemExit(1)
 
@@ -114,10 +117,12 @@ def populate_dictionary(session, batch_size=3000):
                 # TODO: use a normalized design instead since current implementation doesn't allow for pinyin search
                 # NOTE: serialize since SQLAlchemy doesn't support lists
                 # To deserialize, use json.loads()
-                entry = Entry(simplified=simplified,
-                              traditional=traditional,
-                              pinyin=json.dumps(pronunciation),
-                              definition=json.dumps(definition))
+                entry = Entry(
+                    simplified=simplified,
+                    traditional=traditional,
+                    pinyin=json.dumps(pronunciation),
+                    definition=json.dumps(definition),
+                )
                 batch.append(entry)
                 if len(batch) >= batch_size:
                     session.bulk_save_objects(batch)
@@ -133,7 +138,7 @@ def populate_sentences(session, batch_size=1000):
     # Source: https://tatoeba.org/en/downloads
 
     with open(SENTENCES_FILE, "rt") as file:
-        batch = []
+        batch = []  # use batched operations to speed things up
         for line in file:
             batch.append(Sentence(text=line.strip()))
             if len(batch) >= batch_size:
