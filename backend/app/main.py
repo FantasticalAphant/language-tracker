@@ -1,3 +1,4 @@
+import logging
 import os
 import pickle
 from pathlib import Path
@@ -13,6 +14,8 @@ import crud
 import helpers
 import schemas
 from database import get_db
+
+logging.basicConfig(level=logging.INFO)
 
 # Set up file paths for jieba
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -91,9 +94,11 @@ def get_sentences(
 
 @router.get("/dictionary", response_model=list[schemas.Entry], tags=["dictionary"])
 def get_dictionary_entries(
-    db: Session = Depends(get_db), limit: int = 100, offset: int = 0
+    db: Session = Depends(get_db),
+    limit: int = 20,
+    keyword: str = None,
 ):
-    entries = crud.get_dictionary_entries(db, limit, offset)
+    entries = crud.get_dictionary_entries(db, limit, keyword)
     if not entries:
         raise HTTPException(status_code=404, detail="Dictionary entries not found")
     return entries

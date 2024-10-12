@@ -1,8 +1,17 @@
-import {Disclosure, DisclosureButton, DisclosurePanel, Menu, MenuButton, MenuItem, MenuItems} from '@headlessui/react'
-import {Bars3Icon, BellIcon, XMarkIcon} from '@heroicons/react/24/outline'
+import {
+    Combobox,
+    ComboboxInput,
+    Disclosure,
+    DisclosureButton,
+    DisclosurePanel,
+    Menu,
+    MenuButton,
+    MenuItem,
+    MenuItems
+} from '@headlessui/react'
+import {Bars3Icon, BellIcon, MagnifyingGlassIcon, XMarkIcon} from '@heroicons/react/24/outline'
 import {useEffect, useState} from "react";
 import List from "../components/List.jsx";
-import PaginationFooter from "../components/PaginationFooter.jsx";
 
 const user = {
     name: 'Tom Cook',
@@ -33,16 +42,26 @@ function classNames(...classes) {
 
 export default function DictionaryPage() {
     const [data, setData] = useState([])
+    const [query, setQuery] = useState("");
 
     useEffect(() => {
-        fetch("http://localhost:8000/dictionary")
-            .then(res => res.json())
-            .then(data => {
-                console.log(data)
-                setData(data)
-            })
-            .catch(err => console.log(err));
-    }, []);
+        const fetchData = async () => {
+            try {
+                const response = await fetch(
+                    query
+                        ? `http://localhost:8000/dictionary?keyword=${query}`
+                        : "http://localhost:8000/dictionary"
+                );
+                const data = await response.json();
+                console.log(data);
+                setData(data);
+            } catch (err) {
+                console.log(err);
+            }
+        };
+
+        fetchData();
+    }, [query]);
 
 
     return (
@@ -198,12 +217,25 @@ export default function DictionaryPage() {
                         </div>
                     </header>
                     <main>
+                        <Combobox>
+                            <div className="relative">
+                                <MagnifyingGlassIcon
+                                    className="pointer-events-none absolute left-4 top-3.5 h-5 w-5 text-gray-400"
+                                    aria-hidden="true"
+                                />
+                                <ComboboxInput
+                                    autoFocus
+                                    className="h-12 w-full border-0 bg-transparent pl-11 pr-4 text-gray-900 placeholder:text-gray-400 focus:ring-0 sm:text-sm"
+                                    placeholder="Search..."
+                                    onChange={(event) => setQuery(event.target.value)}
+                                />
+                            </div>
+                        </Combobox>
                         <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
-                            <List words={data}/>
+                            <List words={Array.isArray(data) && data || []}/>
                         </div>
                     </main>
                 </div>
-                <PaginationFooter totalResults={100} resultsPerPage={10} currentPage={3}/>
             </div>
         </>
     )

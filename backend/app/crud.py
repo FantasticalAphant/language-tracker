@@ -24,9 +24,18 @@ def get_words_by_level(db: Session, level: int):
     return db.query(models.Word).filter(models.Word.level_id == level).all()
 
 
-def get_dictionary_entries(db: Session, limit: int = 100, offset: int = 0):
+def get_dictionary_entries(db: Session, limit: int = 25, keyword: str = None):
     """Get all dictionary entries"""
-    return db.query(models.Entry).limit(limit).offset(offset).all()
+
+    if keyword:  # search by query if it exists
+        return (
+            db.query(models.Entry)
+            .filter(models.Entry.pinyin.contains(keyword))
+            .limit(limit)
+            .all()
+        )
+
+    return db.query(models.Entry).limit(limit).all()
 
 
 def create_word_list(db: Session, name: str):
