@@ -3,6 +3,7 @@ from datetime import datetime
 from sqlalchemy.orm import Session
 
 import models
+from helpers import is_chinese_script
 
 
 def get_sentences(db: Session, limit: int = 100, offset: int = 0, keyword: str = None):
@@ -26,16 +27,16 @@ def get_words_by_level(db: Session, level: int):
 
 def get_dictionary_entries(db: Session, limit: int = 25, keyword: str = None):
     """Get all dictionary entries"""
+    # TODO: search character or pinyin depending on keyword type
+    query = db.query(models.Entry)
 
     if keyword:  # search by query if it exists
-        return (
-            db.query(models.Entry)
-            .filter(models.Entry.pinyin.contains(keyword))
-            .limit(limit)
-            .all()
-        )
+        if is_chinese_script(keyword):
+            query = query.filter(models.Entry.simplified.contains(keyword))
+        else:
+            query = query.filter(models.Entry.pinyin.contains(keyword))
 
-    return db.query(models.Entry).limit(limit).all()
+    return query.limit(limit).all()
 
 
 def create_word_list(db: Session, name: str):
