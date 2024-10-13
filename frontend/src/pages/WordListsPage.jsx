@@ -2,6 +2,8 @@ import {Disclosure, DisclosureButton, DisclosurePanel, Menu, MenuButton, MenuIte
 import {Bars3Icon, BellIcon, XMarkIcon} from '@heroicons/react/24/outline'
 import {useEffect, useState} from "react";
 import EmptyState from "../components/EmptyState.jsx";
+import Cards from "../components/Cards.jsx";
+import {useParams} from "react-router";
 
 const user = {
     name: 'Tom Cook',
@@ -33,6 +35,7 @@ export default function WordListsPage() {
     const [data, setData] = useState([]);
     const [name, setName] = useState("");
     const [isLoading, setIsLoading] = useState(false);
+    const {listId} = useParams();
 
     async function handleSubmit(event) {
         event.preventDefault();
@@ -53,6 +56,7 @@ export default function WordListsPage() {
     }
 
     useEffect(() => {
+        console.log(listId);
         setIsLoading(true);
         fetch("http://localhost:8000/wordlists")
             .then(res => res.json())
@@ -224,9 +228,12 @@ export default function WordListsPage() {
                         <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
                             {isLoading ? "loading" : data && JSON.stringify(data) || <EmptyState/>}
                         </div>
+                        {listId
+                            ? data.find((wordList) => wordList.id === listId)?.name
+                            : <Cards wordLists={data}/>}
                     </main>
                 </div>
-                <form onSubmit={handleSubmit}>
+                {!listId && <form onSubmit={handleSubmit}>
                     <div className="flex justify-end space-x-2 pr-3">
                         <input
                             id="name"
@@ -244,7 +251,7 @@ export default function WordListsPage() {
                             Create New List
                         </button>
                     </div>
-                </form>
+                </form>}
             </div>
         </>
     )

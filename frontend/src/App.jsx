@@ -24,6 +24,7 @@ function App() {
                         <Route path={"/sentences"} element={<SentencesPage/>}/>
                         <Route path={"/analyzer"} element={<AnalyzerPage/>}/>
                         <Route path={"/translator"} element={<TranslatorPage/>}/>
+                        <Route path={"/word_lists/:listId"} element={<WordListsPage/>}/>
                         <Route path={"/word_lists"} element={<WordListsPage/>}/>
                     </Routes>
                 </main>
