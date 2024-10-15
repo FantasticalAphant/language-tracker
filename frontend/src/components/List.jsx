@@ -23,8 +23,8 @@ export default function List({words}) {
                     </tr>
                     </thead>
                     <tbody className="divide-y divide-gray-200 bg-white">
-                    {words.map((word) => (
-                        <tr key={word.simplified} className="divide-x even:bg-gray-50">
+                    {words.map((word, index) => (
+                        <tr key={index} className="divide-x even:bg-gray-50">
                             <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{word.simplified}</td>
                             <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{word.traditional}</td>
                             <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{word.pinyin}</td>
