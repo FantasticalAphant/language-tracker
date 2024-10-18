@@ -12,6 +12,7 @@ import {
 import {Bars3Icon, BellIcon, MagnifyingGlassIcon, XMarkIcon} from '@heroicons/react/24/outline'
 import {useEffect, useState} from "react";
 import List from "../components/List.jsx";
+import WordListModal from "../components/WordListModal.jsx";
 
 const user = {
     name: 'Tom Cook',
@@ -43,6 +44,7 @@ function classNames(...classes) {
 export default function DictionaryPage() {
     const [data, setData] = useState([])
     const [query, setQuery] = useState("");
+    const [isModalOpen, setIsModalOpen] = useState(false)
 
     useEffect(() => {
         const fetchData = async () => {
@@ -54,6 +56,7 @@ export default function DictionaryPage() {
                 );
                 const data = await response.json();
                 console.log(data);
+                console.log(query);
                 setData(data);
             } catch (err) {
                 console.log(err);
@@ -186,7 +189,6 @@ export default function DictionaryPage() {
                                     <div className="text-sm font-medium text-gray-500">{user.email}</div>
                                 </div>
                                 <button
-                                    type="button"
                                     className="relative ml-auto flex-shrink-0 rounded-full bg-white p-1 text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
                                 >
                                     <span className="absolute -inset-1.5"/>
@@ -232,11 +234,12 @@ export default function DictionaryPage() {
                             </div>
                         </Combobox>
                         <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
-                            <List words={Array.isArray(data) && data || []}/>
+                            <List words={Array.isArray(data) && data || []} setIsOpen={setIsModalOpen}/>
                         </div>
                     </main>
                 </div>
             </div>
+            <WordListModal isOpen={isModalOpen} setIsOpen={setIsModalOpen}/>
         </>
     )
 }
