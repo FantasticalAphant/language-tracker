@@ -226,11 +226,18 @@ export default function WordListsPage() {
                     </header>
                     <main>
                         <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
-                            {isLoading ? "loading" : data && JSON.stringify(data) || <EmptyState/>}
+                            {isLoading ? (
+                                "loading"
+                            ) : data ? (
+                                listId ? (
+                                    JSON.stringify(data.find((wordList) => wordList.id === Number(listId)))
+                                ) : (
+                                    <Cards wordLists={data}/>
+                                )
+                            ) : (
+                                <EmptyState/>
+                            )}
                         </div>
-                        {listId
-                            ? data.find((wordList) => wordList.id === listId)?.name
-                            : <Cards wordLists={data}/>}
                     </main>
                 </div>
                 {!listId && <form onSubmit={handleSubmit}>
