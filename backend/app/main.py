@@ -165,4 +165,9 @@ def read_wordlists(db: Session = Depends(get_db)):
     return db_wordlists
 
 
+@router.post("/wordlists/update", tags=["wordlists"])
+def update_wordlists(wordlist_id: int, entry_id: int, db: Session = Depends(get_db)):
+    crud.update_word_list(db, wordlist_id=wordlist_id, entry_id=entry_id)
+
+
 app.include_router(router)

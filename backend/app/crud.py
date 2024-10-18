@@ -62,10 +62,16 @@ def get_word_lists(db: Session):
     return db.query(models.WordList).all()
 
 
-# def update_word_list(db: Session, wordlist_id: int, entry_ids: list[int]):
-#     wordlist = get_word_list(db, wordlist_id)
-#
-#     entries = db.query(models.Entry).filter(models.Entry.id.in_(entry_ids)).all()
-#     wordlist.entries.extend(entries)
-#
-#     db.refresh(wordlist)
+def update_word_list(db: Session, wordlist_id: int, entry_id: int):
+    """Update the word lists with the new entry"""
+
+    # TODO: check if the word is already in the list
+
+    word_list = get_word_list(db, wordlist_id)
+    entry = db.query(models.Entry).filter(models.Entry.id == entry_id).first()
+
+    word_list.entries.append(entry)
+
+    db.commit()
+
+    return word_list  # just return the updated word lists for now
