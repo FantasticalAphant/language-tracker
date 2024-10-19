@@ -2,10 +2,11 @@ import logging
 import os
 import pickle
 from pathlib import Path
+from typing import Annotated
 
 import jieba
 import redis
-from fastapi import FastAPI, APIRouter, Depends, HTTPException
+from fastapi import FastAPI, APIRouter, Depends, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
@@ -165,9 +166,15 @@ def read_wordlists(db: Session = Depends(get_db)):
     return db_wordlists
 
 
-@router.post("/wordlists/update", tags=["wordlists"])
-def update_wordlists(wordlist_id: int, entry_id: int, db: Session = Depends(get_db)):
-    crud.update_word_list(db, wordlist_id=wordlist_id, entry_id=entry_id)
+@router.post(
+    "/wordlists/update", response_model=list[schemas.WordList], tags=["wordlists"]
+)
+def update_wordlists(
+    entry_id: int,
+    wordlist_ids: Annotated[list[int] | None, Query()] = None,
+    db: Session = Depends(get_db),
+):
+    return crud.update_word_lists(db, entry_id=entry_id, wordlist_ids=wordlist_ids)
 
 
 app.include_router(router)
