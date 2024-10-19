@@ -33,12 +33,15 @@ export default function List({words, setIsOpen}) {
                                 <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{word.pinyin}</td>
                                 <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{word.definition}</td>
                             </tr>
-                            <button
-                                onClick={() => setIsOpen(true)}
-                                className="rounded-full bg-indigo-600 p-1.5 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-                            >
-                                <PlusIcon aria-hidden="true" className="h-5 w-5"/>
-                            </button>
+                            {
+                                setIsOpen &&
+                                <button
+                                    onClick={() => setIsOpen(true)}
+                                    className="rounded-full bg-indigo-600 p-1.5 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                                >
+                                    <PlusIcon aria-hidden="true" className="h-5 w-5"/>
+                                </button>
+                            }
                         </>
                     ))}
                     </tbody>
