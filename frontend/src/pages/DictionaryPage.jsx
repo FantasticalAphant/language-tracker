@@ -12,7 +12,6 @@ import {
 import {Bars3Icon, BellIcon, MagnifyingGlassIcon, XMarkIcon} from '@heroicons/react/24/outline'
 import {useEffect, useState} from "react";
 import List from "../components/List.jsx";
-import WordListModal from "../components/WordListModal.jsx";
 
 const user = {
     name: 'Tom Cook',
@@ -234,12 +233,12 @@ export default function DictionaryPage() {
                             </div>
                         </Combobox>
                         <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
-                            <List words={Array.isArray(data) && data || []} setIsOpen={setIsModalOpen}/>
+                            <List words={Array.isArray(data) && data || []} isOpen={isModalOpen}
+                                  setIsOpen={setIsModalOpen}/>
                         </div>
                     </main>
                 </div>
             </div>
-            <WordListModal isOpen={isModalOpen} setIsOpen={setIsModalOpen}/>
         </>
     )
 }

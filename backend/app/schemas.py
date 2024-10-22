@@ -8,6 +8,7 @@ class Sentence(BaseModel):
 
 
 class Entry(BaseModel):
+    id: int
     simplified: str
     traditional: str
     pinyin: str

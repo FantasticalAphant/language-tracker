@@ -68,8 +68,8 @@ def get_entry_word_lists(db: Session, entry_id: int):
     return [wordlist.id for wordlist in entry.word_lists]
 
 
-def update_word_lists(db: Session, wordlist_ids: list[int], entry_id: int):
-    """Update the word lists with the new entry"""
+def add_entry_word_lists(db: Session, wordlist_ids: list[int], entry_id: int):
+    """Add to the word lists a specific entry"""
 
     # TODO: check if the word is already in the list
 
@@ -79,8 +79,24 @@ def update_word_lists(db: Session, wordlist_ids: list[int], entry_id: int):
     entry = db.query(models.Entry).filter(models.Entry.id == entry_id).first()
 
     for word_list in word_lists:
-        word_list.entries.append(entry)
+        if entry not in word_list.entries:
+            word_list.entries.append(entry)
 
     db.commit()
 
     return word_lists  # just return the updated word lists for now
+
+
+def delete_entry_word_lists(db: Session, wordlist_ids: list[int], entry_id: int):
+    """Delete from the word lists a specific entry"""
+    word_lists = (
+        db.query(models.WordList).filter(models.WordList.id.in_(wordlist_ids)).all()
+    )
+    entry = db.query(models.Entry).filter(models.Entry.id == entry_id).first()
+
+    for word_list in word_lists:
+        word_list.entries.remove(entry)
+
+    db.commit()
+
+    return word_lists

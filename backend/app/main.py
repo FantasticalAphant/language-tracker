@@ -175,14 +175,31 @@ def get_entry_wordlists(entry_id: int, db: Session = Depends(get_db)):
 
 
 @router.post(
-    "/wordlists/update", response_model=list[schemas.WordList], tags=["wordlists"]
+    "/wordlists/add/{entry_id}",
+    tags=["wordlists"],
 )
 def update_wordlists(
     entry_id: int,
-    wordlist_ids: Annotated[list[int] | None, Query()] = None,
+    add_wordlist_ids: Annotated[list[int] | None, Query()] = None,
     db: Session = Depends(get_db),
 ):
-    return crud.update_word_lists(db, entry_id=entry_id, wordlist_ids=wordlist_ids)
+    if add_wordlist_ids is not None:
+        crud.add_entry_word_lists(db, entry_id=entry_id, wordlist_ids=add_wordlist_ids)
+
+
+@router.delete(
+    "/wordlists/remove/{entry_id}",
+    tags=["wordlists"],
+)
+def delete_wordlists(
+    entry_id: int,
+    remove_wordlist_ids: Annotated[list[int] | None, Query()] = None,
+    db: Session = Depends(get_db),
+):
+    if remove_wordlist_ids is not None:
+        crud.delete_entry_word_lists(
+            db, entry_id=entry_id, wordlist_ids=remove_wordlist_ids
+        )
 
 
 app.include_router(router)
