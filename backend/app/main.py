@@ -166,6 +166,14 @@ def read_wordlists(db: Session = Depends(get_db)):
     return db_wordlists
 
 
+# TODO: come up with a better endpoint
+@router.get(
+    "/wordlists/entries/{entry_id}", response_model=list[int], tags=["wordlists"]
+)
+def get_entry_wordlists(entry_id: int, db: Session = Depends(get_db)):
+    return crud.get_entry_word_lists(db, entry_id=entry_id)
+
+
 @router.post(
     "/wordlists/update", response_model=list[schemas.WordList], tags=["wordlists"]
 )

@@ -62,6 +62,12 @@ def get_word_lists(db: Session):
     return db.query(models.WordList).all()
 
 
+def get_entry_word_lists(db: Session, entry_id: int):
+    """Get all word lists that contain the specified entry"""
+    entry = db.query(models.Entry).filter(models.Entry.id == entry_id).first()
+    return [wordlist.id for wordlist in entry.word_lists]
+
+
 def update_word_lists(db: Session, wordlist_ids: list[int], entry_id: int):
     """Update the word lists with the new entry"""
 
