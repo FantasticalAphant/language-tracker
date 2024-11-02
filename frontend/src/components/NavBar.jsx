@@ -1,6 +1,20 @@
 import {Disclosure, DisclosureButton, DisclosurePanel, Menu, MenuButton, MenuItem, MenuItems} from '@headlessui/react'
 import {Bars3Icon, BellIcon, XMarkIcon} from '@heroicons/react/24/outline'
 
+const navigation = [
+    {name: 'Dashboard', href: '#', current: true},
+    {name: 'Dictionary', href: '/dictionary', current: false},
+    {name: 'HSK Lists', href: '/hsk_lists', current: false},
+    {name: 'Sentences', href: '/sentences', current: false},
+    {name: 'Analyzer', href: '/analyzer', current: false},
+    {name: 'Translator', href: '/translator', current: false},
+    {name: 'Word Lists', href: '/word_lists', current: false},
+]
+
+function classNames(...classes) {
+    return classes.filter(Boolean).join(' ')
+}
+
 export default function Navbar() {
     return (
         <Disclosure as="nav" className="bg-white shadow">
@@ -25,50 +39,18 @@ export default function Navbar() {
                             />
                         </div>
                         <div className="hidden sm:ml-6 sm:flex sm:space-x-8">
-                            {/* Current: "border-indigo-500 text-gray-900", Default: "border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700" */}
-                            {/*TODO: change this into an array with map*/}
-                            <a
-                                href="#"
-                                className="inline-flex items-center border-b-2 border-indigo-500 px-1 pt-1 text-sm font-medium text-gray-900"
-                            >
-                                Dashboard
-                            </a>
-                            <a
-                                href="/dictionary"
-                                className="inline-flex items-center border-b-2 border-transparent px-1 pt-1 text-sm font-medium text-gray-500 hover:border-gray-300 hover:text-gray-700"
-                            >
-                                Dictionary
-                            </a>
-                            <a
-                                href="/hsk_lists"
-                                className="inline-flex items-center border-b-2 border-transparent px-1 pt-1 text-sm font-medium text-gray-500 hover:border-gray-300 hover:text-gray-700"
-                            >
-                                HSK Lists
-                            </a>
-                            <a
-                                href="/sentences"
-                                className="inline-flex items-center border-b-2 border-transparent px-1 pt-1 text-sm font-medium text-gray-500 hover:border-gray-300 hover:text-gray-700"
-                            >
-                                Sentences
-                            </a>
-                            <a
-                                href="/analyzer"
-                                className="inline-flex items-center border-b-2 border-transparent px-1 pt-1 text-sm font-medium text-gray-500 hover:border-gray-300 hover:text-gray-700"
-                            >
-                                Analyzer
-                            </a>
-                            <a
-                                href="/translator"
-                                className="inline-flex items-center border-b-2 border-transparent px-1 pt-1 text-sm font-medium text-gray-500 hover:border-gray-300 hover:text-gray-700"
-                            >
-                                Translator
-                            </a>
-                            <a
-                                href="/word_lists"
-                                className="inline-flex items-center border-b-2 border-transparent px-1 pt-1 text-sm font-medium text-gray-500 hover:border-gray-300 hover:text-gray-700"
-                            >
-                                Word Lists
-                            </a>
+                            {navigation.map((item) => (
+                                <a
+                                    key={item.name}
+                                    href={item.href}
+                                    className={classNames(
+                                        item.current ? 'border-indigo-500 text-gray-900' : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700',
+                                        'inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium'
+                                    )}
+                                >
+                                    {item.name}
+                                </a>
+                            ))}
                         </div>
                     </div>
                     <div
