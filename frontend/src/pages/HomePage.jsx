@@ -12,7 +12,7 @@ export default function HomePage() {
         ```
       */}
             <div className="min-h-full">
-                <Navbar/>
+                <Navbar currentTab={"Dashboard"}/>
 
                 <div className="py-10">
                     <header>

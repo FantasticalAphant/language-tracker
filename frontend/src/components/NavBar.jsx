@@ -2,21 +2,25 @@ import {Disclosure, DisclosureButton, DisclosurePanel, Menu, MenuButton, MenuIte
 import {Bars3Icon, BellIcon, XMarkIcon} from '@heroicons/react/24/outline'
 import {Link} from "react-router-dom";
 
-const navigation = [
-    {name: 'Dashboard', href: '#', current: true},
-    {name: 'Dictionary', href: '/dictionary', current: false},
-    {name: 'HSK Lists', href: '/hsk_lists', current: false},
-    {name: 'Sentences', href: '/sentences', current: false},
-    {name: 'Analyzer', href: '/analyzer', current: false},
-    {name: 'Translator', href: '/translator', current: false},
-    {name: 'Word Lists', href: '/word_lists', current: false},
-]
-
 function classNames(...classes) {
     return classes.filter(Boolean).join(' ')
 }
 
-export default function Navbar() {
+// eslint-disable-next-line react/prop-types
+export default function Navbar({currentTab}) {
+    const navigation = [
+        {name: 'Dashboard', href: '/', current: true},
+        {name: 'Dictionary', href: '/dictionary', current: false},
+        {name: 'HSK Lists', href: '/hsk_lists', current: false},
+        {name: 'Sentences', href: '/sentences', current: false},
+        {name: 'Analyzer', href: '/analyzer', current: false},
+        {name: 'Translator', href: '/translator', current: false},
+        {name: 'Word Lists', href: '/word_lists', current: false},
+    ].map(item => ({
+        ...item,
+        current: item.name === currentTab
+    }))
+
     return (
         <Disclosure as="nav" className="bg-white shadow">
             <div className="mx-auto max-w-7xl px-2 sm:px-6 lg:px-8">
