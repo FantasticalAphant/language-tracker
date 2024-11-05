@@ -3,6 +3,7 @@ import EmptyState from "../components/EmptyState.jsx";
 import Cards from "../components/Cards.jsx";
 import {useParams} from "react-router";
 import Layout from "../components/Layout.jsx";
+import IndividualWordList from "../components/IndividualWordList.jsx";
 
 export default function WordListsPage() {
     const [data, setData] = useState([]);
@@ -18,7 +19,7 @@ export default function WordListsPage() {
                 headers: {
                     'Content-Type': 'application/json',
                 },
-            body: JSON.stringify({name: listName}),
+                body: JSON.stringify({name: listName}),
             }
         )
 
@@ -51,7 +52,7 @@ export default function WordListsPage() {
                         "loading"
                     ) : data ? (
                         listId ? (
-                            JSON.stringify(data.find((wordList) => wordList.id === Number(listId)))
+                            <IndividualWordList wordList={data.find((wordList) => wordList.id === Number(listId))}/>
                         ) : (
                             <Cards wordLists={data}/>
                         )
