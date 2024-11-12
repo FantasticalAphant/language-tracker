@@ -5,15 +5,15 @@ from database import Base
 
 # Association table for dictionary entries and user-defined vocab lists
 wordlist_entries = Table(
-    "wordlist_entries", Base.metadata,
+    "wordlist_entries",
+    Base.metadata,
     Column("wordlist_id", Integer, ForeignKey("wordlists.id"), primary_key=True),
     Column("entry_id", Integer, ForeignKey("entries.id"), primary_key=True),
 )
 
 
-# Create your models here.
 class Sentence(Base):
-    __tablename__ = 'sentences'
+    __tablename__ = "sentences"
 
     id = Column(Integer, primary_key=True)
     text = Column(String, index=True)
@@ -28,13 +28,55 @@ class Entry(Base):
     id = Column(Integer, primary_key=True, index=True)
     simplified = Column(String, index=True)
     traditional = Column(String, index=True)
-    pinyin = Column(String, index=True)
-    definition = Column(String, index=True)
 
-    word_lists = relationship("WordList", secondary=wordlist_entries, back_populates="entries")
+    pronunciations = relationship("Pronunciation", back_populates="entry")
+    definitions = relationship("Definition", back_populates="entry")
+
+    word_lists = relationship(
+        "WordList", secondary=wordlist_entries, back_populates="entries"
+    )
+
+    @classmethod
+    def create(cls, simplified, traditional, pronunciations, definitions):
+        entry = cls(simplified=simplified, traditional=traditional)
+        entry.pronunciations = [
+            Pronunciation(pinyin=pinyin, position=i)
+            for i, pinyin in enumerate(pronunciations)
+        ]
+
+        entry.definitions = [
+            Definition(definition=definition) for definition in definitions
+        ]
+
+        return entry
 
     def __repr__(self):
-        return f"{self.simplified} ({self.traditional}) {self.pinyin} - {self.definition}"
+        return (
+            f"{self.simplified} ({self.traditional}) "
+            f"{' '.join(p.pinyin for p in self.pronunciations)} - "
+            f"{'; '.join(d.text for d in self.definitions)}"
+        )
+
+
+class Pronunciation(Base):
+    __tablename__ = "pronunciations"
+
+    id = Column(Integer, primary_key=True)
+    entry_id = Column(Integer, ForeignKey("entries.id"), index=True)
+    pinyin = Column(String, nullable=False, index=True)
+    position = Column(Integer, nullable=True)
+
+    entry = relationship("Entry", back_populates="pronunciations")
+
+
+class Definition(Base):
+    __tablename__ = "definitions"
+
+    id = Column(Integer, primary_key=True)
+    entry_id = Column(Integer, ForeignKey("entries.id"), index=True)
+    definition = Column(String, nullable=True, index=True)
+
+    entry = relationship("Entry", back_populates="definitions")
 
 
 # Other Column properties to consider include nullable and field size
@@ -73,4 +115,6 @@ class WordList(Base):
     time_created = Column(DateTime, index=True)
     # TODO: add user column after OAuth2 is implemented
 
-    entries = relationship("Entry", secondary=wordlist_entries, back_populates="word_lists")
+    entries = relationship(
+        "Entry", secondary=wordlist_entries, back_populates="word_lists"
+    )

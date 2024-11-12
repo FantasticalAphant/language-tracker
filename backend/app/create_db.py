@@ -1,5 +1,4 @@
 import csv
-import json
 import os
 import re
 from pathlib import Path
@@ -109,33 +108,27 @@ def _parse_entry(line: str) -> tuple[str, str, list[str], list[str]] | None:
     return simplified, traditional, pronunciation, definition
 
 
-def populate_dictionary(session, batch_size=3000):
+def populate_dictionary(session):
     # File source: https://www.mdbg.net/chinese/dictionary?page=cc-cedict
 
     print("Importing dictionary...")
     with open(DICTIONARY_FILE, "rt") as file:
-        batch = []
         for line in file:
             if line.startswith("#"):
                 continue  # ignore comments at the beginning of the file
 
             if result := _parse_entry(line):
-                simplified, traditional, pronunciation, definition = result
+                simplified, traditional, pronunciations, definitions = result
                 # TODO: use a normalized design instead since current implementation doesn't allow for pinyin search
                 # NOTE: serialize since SQLAlchemy doesn't support lists
                 # To deserialize, use json.loads()
-                entry = Entry(
+                entry = Entry.create(
                     simplified=simplified,
                     traditional=traditional,
-                    pinyin=json.dumps(pronunciation),
-                    definition=json.dumps(definition),
+                    pronunciations=pronunciations,
+                    definitions=definitions,
                 )
-                batch.append(entry)
-                if len(batch) >= batch_size:
-                    session.bulk_save_objects(batch)
-                    batch.clear()
-        if batch:
-            session.bulk_save_objects(batch)
+                session.add(entry)
 
     session.commit()
 
