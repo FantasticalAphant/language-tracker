@@ -31,7 +31,7 @@ def create_tables():
     Base.metadata.create_all(engine)
 
 
-def populate_hsk_lists(session):
+def populate_hsk_lists(session, batch_size=3000):
     # CSV FILE FIELDS
     # 0 - simplified characters
     # 1 - traditional characters
@@ -39,6 +39,7 @@ def populate_hsk_lists(session):
     # 3 - pinyin with tone marks
     # 4 - definition
     for level in range(MIN_LEVEL, MAX_LEVEL + 1):
+        batch = []
         # go through each HSK file and populate the database
         with open(
             os.path.join(HSK_LIST_DIR, f"hsk{level}.csv"),
@@ -54,7 +55,13 @@ def populate_hsk_lists(session):
                     definition=row[4],
                     level_id=level,
                 )
-                session.add(entry)
+                batch.append(entry)
+                if len(batch) >= batch_size:
+                    session.bulk_save_objects(batch)
+                    batch.clear()
+
+            if batch:
+                session.bulk_save_objects(batch)
 
     session.commit()
 
