@@ -53,7 +53,7 @@ export default function List({words, isOpen, setIsOpen}) {
                                     onClick={() => handleOpenModal(word["id"])}
                                     className="rounded-full bg-indigo-600 p-1.5 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
                                 >
-                                    <PlusIcon aria-hidden="true" className="h-5 w-5"/>
+                                    <PlusIcon aria-hidden="true" className="h-4 w-4"/>
                                 </button>
                             }
                         </>
