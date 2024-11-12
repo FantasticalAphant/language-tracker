@@ -7,12 +7,21 @@ class Sentence(BaseModel):
     text: str
 
 
+class PronunciationBase(BaseModel):
+    pinyin: str
+    position: int
+
+
+class DefinitionBase(BaseModel):
+    definition: str
+
+
 class Entry(BaseModel):
     id: int
     simplified: str
     traditional: str
-    pinyin: str
-    definition: str
+    pronunciations: list[PronunciationBase]
+    definitions: list[DefinitionBase]
 
 
 class WordBase(BaseModel):

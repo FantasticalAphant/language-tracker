@@ -4,6 +4,7 @@ import {useState} from "react";
 
 const headings = ['Simplified', 'Traditional', 'Pinyin', 'Definition'];
 
+// TODO: split this into two components: one for dictionary and one for hsk lists
 // eslint-disable-next-line react/prop-types
 export default function List({words, isOpen, setIsOpen}) {
     const [currentWordId, setCurrentWordId] = useState(null);
@@ -39,8 +40,12 @@ export default function List({words, isOpen, setIsOpen}) {
                             <tr key={index} className="divide-x even:bg-gray-50">
                                 <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{word.simplified}</td>
                                 <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{word.traditional}</td>
-                                <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{word.pinyin}</td>
-                                <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{word.definition}</td>
+                                <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+                                    {setIsOpen ? word.pronunciations.map(p => p.pinyin).join("") : word.pinyin}
+                                </td>
+                                <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+                                    {setIsOpen ? word.definitions.map(d => d.definition).join(" ") : word.definition}
+                                </td>
                             </tr>
                             {
                                 setIsOpen &&
