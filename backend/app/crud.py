@@ -29,14 +29,14 @@ def get_dictionary_entries(db: Session, limit: int = 25, keyword: str = None):
     """Get all dictionary entries"""
     # TODO: search character or pinyin depending on keyword type
     query = db.query(models.Entry)
-    query.join(models.Entry.pronunciations)
-    query.join(models.Entry.definitions)
 
     if keyword:  # search by query if it exists
         if is_chinese_script(keyword):
             query = query.filter(models.Entry.simplified.contains(keyword))
         else:
-            query = query.filter(models.Entry.pronunciations.contains(keyword))
+            query = query.join(models.Entry.pronunciations).filter(
+                models.Pronunciation.pinyin.contains(keyword)
+            )
 
     return query.limit(limit).all()
 
