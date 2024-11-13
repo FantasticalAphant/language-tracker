@@ -20,6 +20,10 @@ def get_sentences(db: Session, limit: int = 100, offset: int = 0, keyword: str =
     return db.query(models.Sentence).offset(offset).limit(limit).all()
 
 
+def get_sentence(db: Session, sentence_id: int):
+    return db.query(models.Sentence).filter(models.Sentence.id == sentence_id).first()
+
+
 def get_words_by_level(db: Session, level: int):
     """Get all words for an HSK level"""
     return db.query(models.Word).filter(models.Word.level_id == level).all()

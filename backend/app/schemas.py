@@ -4,6 +4,7 @@ from pydantic import BaseModel
 
 
 class Sentence(BaseModel):
+    id: int
     text: str
 
 

@@ -78,6 +78,14 @@ def get_hsk_level_words(level: int, db: Session = Depends(get_db)):
     return hsk_level
 
 
+@router.get(
+    "/sentence/{sentence_id}", response_model=schemas.Sentence, tags=["sentences"]
+)
+def get_sentence(sentence_id: int, db: Session = Depends(get_db)):
+    sentence = crud.get_sentence(db, sentence_id)
+    return sentence
+
+
 # TODO: allow the user to search for characters in a string
 # Also, try to normalize simplified and traditional characters
 @router.get("/sentences", response_model=list[schemas.Sentence], tags=["sentences"])

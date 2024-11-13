@@ -2,6 +2,7 @@ import {Combobox, ComboboxInput} from '@headlessui/react'
 import {MagnifyingGlassIcon} from '@heroicons/react/24/outline'
 import {useEffect, useState} from "react";
 import Layout from "../components/Layout.jsx";
+import {Link} from "react-router-dom";
 
 export default function SentencesPage() {
     const [data, setData] = useState([]);
@@ -48,7 +49,11 @@ export default function SentencesPage() {
                 <div className="mt-3">
                     <ul>
                         {Array.isArray(data) && data.map((item, index) => (
-                            <li key={index}>{item.text}</li>
+                            <li key={index}>
+                                <Link to={`/sentences/${item.id}`}>
+                                    {item.text}
+                                </Link>
+                            </li>
                         ))}
                     </ul>
                 </div>

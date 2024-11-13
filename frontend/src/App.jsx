@@ -8,6 +8,7 @@ import AnalyzerPage from "./pages/AnalyzerPage.jsx";
 import TranslatorPage from "./pages/TranslatorPage.jsx";
 import WordListsPage from "./pages/WordListsPage.jsx";
 import NotFoundPage from "./pages/NotFoundPage.jsx";
+import SentencePage from "./pages/SentencePage.jsx";
 
 function App() {
     return (
@@ -22,6 +23,7 @@ function App() {
                         <Route path={"/dictionary"} element={<DictionaryPage/>}/>
                         <Route path={"/hsk_lists"} element={<HSKListsPage/>}/>
                         <Route path={"/sentences"} element={<SentencesPage/>}/>
+                        <Route path={"/sentences/:sentenceId"} element={<SentencePage/>}/>
                         <Route path={"/analyzer"} element={<AnalyzerPage/>}/>
                         <Route path={"/translator"} element={<TranslatorPage/>}/>
                         <Route path={"/word_lists/:listId"} element={<WordListsPage/>}/>
