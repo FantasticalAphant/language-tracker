@@ -41,12 +41,28 @@ def test_get_sentence(sentence_id, sentence_text):
     assert response.json()["text"] == sentence_text
 
 
-def test_get_sentences():
+def test_get_sentences_default():
     response = client.get("/sentences")
+    assert response.status_code == 200
+    assert len(response.json()) == 100
 
 
-def test_get_dictionary_entries():
+def test_get_sentences_limit():
+    response = client.get("/sentences", params={"limit": 30000})
+    assert response.status_code == 200
+    assert len(response.json()) == 30000
+
+
+def test_get_dictionary_entries_default():
     response = client.get("/dictionary")
+    assert response.status_code == 200
+    assert len(response.json()) == 20
+
+
+def test_get_dictionary_entries_limit():
+    response = client.get("/dictionary", params={"limit": 5000})
+    assert response.status_code == 200
+    assert len(response.json()) == 5000
 
 
 def test_submit_text():
