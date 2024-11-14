@@ -5,8 +5,8 @@ from pathlib import Path
 
 from sqlalchemy.orm import sessionmaker
 
+from backend.app.models import Word, Entry, Sentence
 from database import Base, engine
-from models import Word, Entry, Sentence
 
 ENCODING = "utf-8-sig"  # BOM (byte order mark)
 

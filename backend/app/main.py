@@ -11,10 +11,10 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
 
-import crud
-import helpers
-import schemas
-from database import get_db
+import backend.app.crud as crud
+import backend.app.helpers as helpers
+import backend.app.schemas as schemas
+from backend.app.database import get_db
 
 logging.basicConfig(level=logging.INFO)
 

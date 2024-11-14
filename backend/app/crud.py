@@ -2,8 +2,8 @@ from datetime import datetime
 
 from sqlalchemy.orm import Session
 
-import models
-from helpers import is_chinese_script
+import backend.app.models as models
+from backend.app.helpers import is_chinese_script
 
 
 def get_sentences(db: Session, limit: int = 100, offset: int = 0, keyword: str = None):

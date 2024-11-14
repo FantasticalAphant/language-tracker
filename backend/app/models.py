@@ -1,7 +1,7 @@
 from sqlalchemy import Column, Integer, String, ForeignKey, DateTime, Table
 from sqlalchemy.orm import relationship
 
-from database import Base
+from backend.app.database import Base
 
 # Association table for dictionary entries and user-defined vocab lists
 wordlist_entries = Table(
