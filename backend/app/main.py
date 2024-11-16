@@ -179,6 +179,7 @@ def read_wordlists(db: Session = Depends(get_db)):
     "/wordlists/entries/{entry_id}", response_model=list[int], tags=["wordlists"]
 )
 def get_entry_wordlists(entry_id: int, db: Session = Depends(get_db)):
+    """Get all wordlists ids that contain a given entry (id)"""
     return crud.get_entry_word_lists(db, entry_id=entry_id)
 
 
@@ -186,11 +187,12 @@ def get_entry_wordlists(entry_id: int, db: Session = Depends(get_db)):
     "/wordlists/add/{entry_id}",
     tags=["wordlists"],
 )
-def update_wordlists(
+def add_wordlist_entries(
     entry_id: int,
     add_wordlist_ids: Annotated[list[int] | None, Query()] = None,
     db: Session = Depends(get_db),
 ):
+    """Add entry to a list of wordlists"""
     if add_wordlist_ids is not None:
         crud.add_entry_word_lists(db, entry_id=entry_id, wordlist_ids=add_wordlist_ids)
 
@@ -199,11 +201,12 @@ def update_wordlists(
     "/wordlists/remove/{entry_id}",
     tags=["wordlists"],
 )
-def delete_wordlists(
+def delete_wordlist_entries(
     entry_id: int,
     remove_wordlist_ids: Annotated[list[int] | None, Query()] = None,
     db: Session = Depends(get_db),
 ):
+    """Remove entry from a list of wordlists"""
     if remove_wordlist_ids is not None:
         crud.delete_entry_word_lists(
             db, entry_id=entry_id, wordlist_ids=remove_wordlist_ids
