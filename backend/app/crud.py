@@ -63,6 +63,11 @@ def get_word_list(db: Session, wordlist_id: int):
     return db.query(models.WordList).filter(models.WordList.id == wordlist_id).first()
 
 
+def delete_word_list(db: Session, wordlist_id: int):
+    db.query(models.WordList).filter(models.WordList.id == wordlist_id).delete()
+    db.commit()
+
+
 def get_word_lists(db: Session):
     """Get all word lists"""
     return db.query(models.WordList).all()

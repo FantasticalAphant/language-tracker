@@ -166,6 +166,13 @@ def read_wordlist(wordlist_id: int, db: Session = Depends(get_db)):
     return db_wordlist
 
 
+@router.delete(
+    "/wordlists/{wordlist_id}", tags=["wordlists"]
+)
+def delete_wordlist(wordlist_id: int, db: Session = Depends(get_db)):
+    crud.delete_word_list(db, wordlist_id=wordlist_id)
+
+
 @router.get("/wordlists/", response_model=list[schemas.WordList], tags=["wordlists"])
 def read_wordlists(db: Session = Depends(get_db)):
     db_wordlists = crud.get_word_lists(db)
