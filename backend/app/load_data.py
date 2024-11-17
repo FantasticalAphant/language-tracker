@@ -6,7 +6,7 @@ from pathlib import Path
 from sqlalchemy.orm import sessionmaker
 
 from backend.app.models import Word, Entry, Sentence
-from database import Base, engine
+from database import engine
 
 ENCODING = "utf-8-sig"  # BOM (byte order mark)
 
@@ -21,13 +21,6 @@ SENTENCES_FILE = os.path.join(BASE_DIR, "resources", "sentences.txt")
 
 Session = sessionmaker(bind=engine)
 session = Session()
-
-
-def create_tables():
-    # TODO: update entries instead (using alembic or something similar)
-    Base.metadata.drop_all(engine)  # delete all previous entries to prevent duplicates
-    print("Creating database...")
-    Base.metadata.create_all(engine)
 
 
 def populate_hsk_lists(session, batch_size=3000):
@@ -157,6 +150,5 @@ def populate_from_files(session):
 
 
 if __name__ == "__main__":
-    create_tables()
     populate_from_files(session)
     print("Database created and populated")
