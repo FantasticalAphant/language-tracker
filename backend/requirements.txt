@@ -7,3 +7,5 @@ jieba
 requests
 redis
 alembic
+passlib[bcrypt]
+pyjwt

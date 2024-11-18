@@ -3,7 +3,16 @@ from datetime import datetime
 from sqlalchemy.orm import Session
 
 import backend.app.models as models
-from backend.app.helpers import is_chinese_script
+from backend.app.helpers import is_chinese_script, hash_password
+
+
+def create_user(db: Session, username: str, password: str):
+    hashed_password = hash_password(password)
+    user = models.User(username=username, hashed_password=hashed_password)
+    db.add(user)
+    db.commit()
+    db.refresh(user)
+    return user
 
 
 def get_sentences(db: Session, limit: int = 100, offset: int = 0, keyword: str = None):

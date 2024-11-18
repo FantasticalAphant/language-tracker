@@ -1,19 +1,25 @@
 import logging
 import os
 import pickle
+from datetime import timedelta
 from pathlib import Path
 from typing import Annotated
 
 import jieba
+import jwt
 import redis
 from fastapi import FastAPI, APIRouter, Depends, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
+from jwt import InvalidTokenError
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
+from starlette import status
 
 import backend.app.crud as crud
 import backend.app.helpers as helpers
 import backend.app.schemas as schemas
+from backend.app import models
 from backend.app.database import get_db
 
 logging.basicConfig(level=logging.INFO)
@@ -43,8 +49,30 @@ tags_metadata = [
     },
 ]
 
-
 app = FastAPI(tags_metadata=tags_metadata)
+
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
+
+
+def get_current_user(token: Annotated[str, Depends(oauth2_scheme)], db: Session = Depends(get_db)):
+    credentials_exception = HTTPException(
+        status_code=status.HTTP_401_UNAUTHORIZED,
+        detail="Could not validate credentials",
+        headers={"WWW-Authenticate": "Bearer"},
+    )
+    try:
+        payload = jwt.decode(token, helpers.SECRET_KEY, algorithms=[helpers.ALGORITHM])
+        username: str = payload.get("sub")
+        if username is None:
+            raise credentials_exception
+    except InvalidTokenError:
+        raise credentials_exception
+    user = db.query(models.User).filter(models.User.username == username).first()
+    if user is None:
+        raise credentials_exception
+
+    return user
+
 
 # Use redis to cache HSK lists
 r = redis.Redis(host="localhost", port=6379, db=0)
@@ -58,6 +86,27 @@ app.add_middleware(
     allow_headers=["*"],
 )
 router = APIRouter()
+
+
+@router.post("/register")
+def register_user(username: str, password: str, db: Session = Depends(get_db)):
+    user = db.query(models.User).filter_by(username=username).first()
+    if user:
+        raise HTTPException(status_code=400, detail="Username already registered")
+    return crud.create_user(db=db, username=username, password=password)
+
+
+@router.post("/token")
+def login_for_access_token(form_data: Annotated[OAuth2PasswordRequestForm, Depends()],
+                           db: Session = Depends(get_db)) -> schemas.Token:
+    user = db.query(models.User).filter(models.User.username == form_data.username).first()
+    if not user or not helpers.verify_password(form_data.password, user.hashed_password):
+        raise HTTPException(status_code=400, detail="Incorrect username or password.")
+    access_token_expires = timedelta(minutes=30)
+    access_token = helpers.create_access_token(
+        data={"sub": user.username}, expires_delta=access_token_expires
+    )
+    return schemas.Token(access_token=access_token, token_type="bearer")
 
 
 @router.get(
@@ -90,10 +139,10 @@ def get_sentence(sentence_id: int, db: Session = Depends(get_db)):
 # Also, try to normalize simplified and traditional characters
 @router.get("/sentences", response_model=list[schemas.Sentence], tags=["sentences"])
 def get_sentences(
-    db: Session = Depends(get_db),
-    limit: int = 100,
-    offset: int = 0,
-    keyword: str = None,
+        db: Session = Depends(get_db),
+        limit: int = 100,
+        offset: int = 0,
+        keyword: str = None,
 ):
     sentences = crud.get_sentences(db, limit, offset, keyword)
     if not sentences:
@@ -103,9 +152,9 @@ def get_sentences(
 
 @router.get("/dictionary", response_model=list[schemas.Entry], tags=["dictionary"])
 def get_dictionary_entries(
-    db: Session = Depends(get_db),
-    limit: int = 20,
-    keyword: str = None,
+        db: Session = Depends(get_db),
+        limit: int = 20,
+        keyword: str = None,
 ):
     entries = crud.get_dictionary_entries(db, limit, keyword)
     if not entries:
@@ -152,7 +201,11 @@ def submit_text(user_input: TextInput):
 
 
 @router.post("/wordlists/", response_model=schemas.WordList, tags=["wordlists"])
-def create_wordlist(wordlist: schemas.WordListUpdate, db: Session = Depends(get_db)):
+def create_wordlist(wordlist: schemas.WordListUpdate, current_user: Annotated[schemas.User, Depends(get_current_user)],
+                    db: Session = Depends(get_db)):
+    if not current_user:
+        raise HTTPException(status_code=403, detail="Not authorized.")
+
     return crud.create_word_list(db, name=wordlist.name)
 
 
@@ -195,9 +248,9 @@ def get_entry_wordlists(entry_id: int, db: Session = Depends(get_db)):
     tags=["wordlists"],
 )
 def add_wordlist_entries(
-    entry_id: int,
-    add_wordlist_ids: Annotated[list[int] | None, Query()] = None,
-    db: Session = Depends(get_db),
+        entry_id: int,
+        add_wordlist_ids: Annotated[list[int] | None, Query()] = None,
+        db: Session = Depends(get_db),
 ):
     """Add entry to a list of wordlists"""
     if add_wordlist_ids is not None:
@@ -209,9 +262,9 @@ def add_wordlist_entries(
     tags=["wordlists"],
 )
 def delete_wordlist_entries(
-    entry_id: int,
-    remove_wordlist_ids: Annotated[list[int] | None, Query()] = None,
-    db: Session = Depends(get_db),
+        entry_id: int,
+        remove_wordlist_ids: Annotated[list[int] | None, Query()] = None,
+        db: Session = Depends(get_db),
 ):
     """Remove entry from a list of wordlists"""
     if remove_wordlist_ids is not None:
