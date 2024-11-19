@@ -20,14 +20,16 @@ export default function LogInPage() {
                 body: formData
             });
 
-            const {access_token} = await response.json();
-            localStorage.setItem("token", access_token); // store the access token in storage
-
-            navigate("/dashboard")
-
+            // TODO: update the login page if authentication fails
             if (!response.ok) {
                 throw new Error("Authentication failed")
             }
+
+            const {access_token} = await response.json();
+            console.log(access_token);
+            localStorage.setItem("token", access_token); // store the access token in storage
+
+            navigate("/dashboard")
 
         } catch (error) {
             console.error("Login failed", error)
