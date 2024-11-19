@@ -1,6 +1,39 @@
 import Layout from "../components/Layout.jsx";
+import {useNavigate} from "react-router";
 
 export default function LogInPage() {
+    const navigate = useNavigate();
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+
+        const formData = new URLSearchParams();
+        formData.append('username', e.target.username.value);
+        formData.append('password', e.target.password.value);
+
+        try {
+            const response = await fetch("http://localhost:8000/token", {
+                method: "POST",
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: formData
+            });
+
+            const {access_token} = await response.json();
+            localStorage.setItem("token", access_token); // store the access token in storage
+
+            navigate("/dashboard")
+
+            if (!response.ok) {
+                throw new Error("Authentication failed")
+            }
+
+        } catch (error) {
+            console.error("Login failed", error)
+        }
+    }
+
     return (
         <>
             {/*
@@ -24,7 +57,7 @@ export default function LogInPage() {
                                 Sign in to your account
                             </h2>
                         </div>
-                        <form action="#" method="POST" className="space-y-6">
+                        <form onSubmit={handleSubmit} className="space-y-6">
                             <div className="relative -space-y-px rounded-md shadow-sm">
                                 <div
                                     className="pointer-events-none absolute inset-0 z-10 rounded-md ring-1 ring-inset ring-gray-300"/>
@@ -34,7 +67,7 @@ export default function LogInPage() {
                                     </label>
                                     <input
                                         id="email-address"
-                                        name="email"
+                                        name="username"
                                         type="email"
                                         required
                                         placeholder="Email address"

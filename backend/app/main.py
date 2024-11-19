@@ -54,7 +54,9 @@ app = FastAPI(tags_metadata=tags_metadata)
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
 
-def get_current_user(token: Annotated[str, Depends(oauth2_scheme)], db: Session = Depends(get_db)):
+def get_current_user(
+    token: Annotated[str, Depends(oauth2_scheme)], db: Session = Depends(get_db)
+):
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="Could not validate credentials",
@@ -97,10 +99,16 @@ def register_user(username: str, password: str, db: Session = Depends(get_db)):
 
 
 @router.post("/token")
-def login_for_access_token(form_data: Annotated[OAuth2PasswordRequestForm, Depends()],
-                           db: Session = Depends(get_db)) -> schemas.Token:
-    user = db.query(models.User).filter(models.User.username == form_data.username).first()
-    if not user or not helpers.verify_password(form_data.password, user.hashed_password):
+def login_for_access_token(
+    form_data: Annotated[OAuth2PasswordRequestForm, Depends()],
+    db: Session = Depends(get_db),
+) -> schemas.Token:
+    user = (
+        db.query(models.User).filter(models.User.username == form_data.username).first()
+    )
+    if not user or not helpers.verify_password(
+        form_data.password, user.hashed_password
+    ):
         raise HTTPException(status_code=400, detail="Incorrect username or password.")
     access_token_expires = timedelta(minutes=30)
     access_token = helpers.create_access_token(
@@ -139,10 +147,10 @@ def get_sentence(sentence_id: int, db: Session = Depends(get_db)):
 # Also, try to normalize simplified and traditional characters
 @router.get("/sentences", response_model=list[schemas.Sentence], tags=["sentences"])
 def get_sentences(
-        db: Session = Depends(get_db),
-        limit: int = 100,
-        offset: int = 0,
-        keyword: str = None,
+    db: Session = Depends(get_db),
+    limit: int = 100,
+    offset: int = 0,
+    keyword: str = None,
 ):
     sentences = crud.get_sentences(db, limit, offset, keyword)
     if not sentences:
@@ -152,9 +160,9 @@ def get_sentences(
 
 @router.get("/dictionary", response_model=list[schemas.Entry], tags=["dictionary"])
 def get_dictionary_entries(
-        db: Session = Depends(get_db),
-        limit: int = 20,
-        keyword: str = None,
+    db: Session = Depends(get_db),
+    limit: int = 20,
+    keyword: str = None,
 ):
     entries = crud.get_dictionary_entries(db, limit, keyword)
     if not entries:
@@ -167,6 +175,7 @@ class TextInput(BaseModel):
     text: str
 
 
+# TODO: Combine the next two submit_text functions
 # POST endpoint to receive text from the React form
 @router.post("/analyzer", tags=["analyzer"])
 def submit_text(user_input: TextInput):
@@ -201,8 +210,11 @@ def submit_text(user_input: TextInput):
 
 
 @router.post("/wordlists/", response_model=schemas.WordList, tags=["wordlists"])
-def create_wordlist(wordlist: schemas.WordListUpdate, current_user: Annotated[schemas.User, Depends(get_current_user)],
-                    db: Session = Depends(get_db)):
+def create_wordlist(
+    wordlist: schemas.WordListUpdate,
+    current_user: Annotated[schemas.User, Depends(get_current_user)],
+    db: Session = Depends(get_db),
+):
     if not current_user:
         raise HTTPException(status_code=403, detail="Not authorized.")
 
@@ -219,9 +231,7 @@ def read_wordlist(wordlist_id: int, db: Session = Depends(get_db)):
     return db_wordlist
 
 
-@router.delete(
-    "/wordlists/{wordlist_id}", tags=["wordlists"]
-)
+@router.delete("/wordlists/{wordlist_id}", tags=["wordlists"])
 def delete_wordlist(wordlist_id: int, db: Session = Depends(get_db)):
     crud.delete_word_list(db, wordlist_id=wordlist_id)
 
@@ -248,9 +258,9 @@ def get_entry_wordlists(entry_id: int, db: Session = Depends(get_db)):
     tags=["wordlists"],
 )
 def add_wordlist_entries(
-        entry_id: int,
-        add_wordlist_ids: Annotated[list[int] | None, Query()] = None,
-        db: Session = Depends(get_db),
+    entry_id: int,
+    add_wordlist_ids: Annotated[list[int] | None, Query()] = None,
+    db: Session = Depends(get_db),
 ):
     """Add entry to a list of wordlists"""
     if add_wordlist_ids is not None:
@@ -262,9 +272,9 @@ def add_wordlist_entries(
     tags=["wordlists"],
 )
 def delete_wordlist_entries(
-        entry_id: int,
-        remove_wordlist_ids: Annotated[list[int] | None, Query()] = None,
-        db: Session = Depends(get_db),
+    entry_id: int,
+    remove_wordlist_ids: Annotated[list[int] | None, Query()] = None,
+    db: Session = Depends(get_db),
 ):
     """Remove entry from a list of wordlists"""
     if remove_wordlist_ids is not None:
