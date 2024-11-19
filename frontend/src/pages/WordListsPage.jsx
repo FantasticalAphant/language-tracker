@@ -6,6 +6,7 @@ import Layout from "../components/Layout.jsx";
 import IndividualWordList from "../components/IndividualWordList.jsx";
 
 export default function WordListsPage() {
+    const token = localStorage.getItem("token");
     const [data, setData] = useState([]);
     const [listName, setListName] = useState("");
     const [isLoading, setIsLoading] = useState(false);
@@ -18,6 +19,7 @@ export default function WordListsPage() {
                 method: "POST",
                 headers: {
                     'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
                 },
                 body: JSON.stringify({name: listName}),
             }

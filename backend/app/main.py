@@ -117,6 +117,11 @@ def login_for_access_token(
     return schemas.Token(access_token=access_token, token_type="bearer")
 
 
+@router.get("/verify-token")
+async def verify_token(current_user: schemas.User = Depends(get_current_user)):
+    return {"valid": True}
+
+
 @router.get(
     "/level/{level}/words", response_model=list[schemas.Word], tags=["word_lists"]
 )

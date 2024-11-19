@@ -1,7 +1,9 @@
 import Layout from "../components/Layout.jsx";
 import {useNavigate} from "react-router";
+import {useAuth} from "../contexts/UseAuth.jsx";
 
 export default function LogInPage() {
+    const {login} = useAuth();
     const navigate = useNavigate();
 
     const handleSubmit = async (e) => {
@@ -26,11 +28,9 @@ export default function LogInPage() {
             }
 
             const {access_token} = await response.json();
-            console.log(access_token);
-            localStorage.setItem("token", access_token); // store the access token in storage
+            login(access_token);
 
-            navigate("/dashboard")
-
+            navigate("/word_lists")
         } catch (error) {
             console.error("Login failed", error)
         }
