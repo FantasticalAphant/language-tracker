@@ -5,7 +5,7 @@ export const AuthContext = createContext(null)
 
 // eslint-disable-next-line react/prop-types
 export const AuthProvider = ({children}) => {
-    const [isAuthenticated, setIsAuthenticated] = useState(false);
+    const [isAuthenticated, setIsAuthenticated] = useState(!!localStorage.getItem("token"));
 
     useEffect(() => {
         const verifyToken = async () => {
@@ -25,9 +25,11 @@ export const AuthProvider = ({children}) => {
                     setIsAuthenticated(true);
                 } else {
                     localStorage.removeItem("token");
+                    setIsAuthenticated(false);
                 }
             } catch {
                 localStorage.removeItem("token");
+                setIsAuthenticated(false);
             }
         };
 
@@ -55,6 +57,7 @@ export const AuthProvider = ({children}) => {
 export const ProtectedRoute = ({children}) => {
     const {isAuthenticated} = useContext(AuthContext);
 
+    console.log(`Protected Route: ${isAuthenticated}`);
     if (!isAuthenticated) {
         return <Navigate to="/login" replace/>;
     }
