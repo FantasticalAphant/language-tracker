@@ -28,21 +28,23 @@ export default function WordListsPage() {
         const data = await response.json();
 
         setData(prevData => [...prevData, data]);
-        console.log(data);
     }
 
     useEffect(() => {
-        console.log(listId);
         setIsLoading(true);
-        fetch("http://localhost:8000/wordlists")
+        fetch("http://localhost:8000/wordlists", {
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            }
+        })
             .then(res => res.json())
             .then(data => {
-                console.log(data)
                 setData(data)
                 setIsLoading(false);
             })
             .catch(err => console.log(err));
-    }, []);
+    }, [token]);
 
     const name = "Word Lists";
 

@@ -223,13 +223,14 @@ def create_wordlist(
     if not current_user:
         raise HTTPException(status_code=403, detail="Not authorized.")
 
-    return crud.create_word_list(db, name=wordlist.name)
+    return crud.create_word_list(db, name=wordlist.name, user_id=current_user.id)
 
 
 @router.get(
     "/wordlists/{wordlist_id}", response_model=schemas.WordList, tags=["wordlists"]
 )
 def read_wordlist(wordlist_id: int, db: Session = Depends(get_db)):
+    # TODO: check if the authenticated user actually owns the information
     db_wordlist = crud.get_word_list(db, wordlist_id=wordlist_id)
     if db_wordlist is None:
         raise HTTPException(status_code=404, detail="Wordlist not found")
@@ -238,14 +239,16 @@ def read_wordlist(wordlist_id: int, db: Session = Depends(get_db)):
 
 @router.delete("/wordlists/{wordlist_id}", tags=["wordlists"])
 def delete_wordlist(wordlist_id: int, db: Session = Depends(get_db)):
+    # TODO: check if the user owns the word list
     crud.delete_word_list(db, wordlist_id=wordlist_id)
 
 
 @router.get("/wordlists/", response_model=list[schemas.WordList], tags=["wordlists"])
-def read_wordlists(db: Session = Depends(get_db)):
-    db_wordlists = crud.get_word_lists(db)
-    if db_wordlists is None:
-        raise HTTPException(status_code=404, detail="Wordlists not found")
+def read_wordlists(
+    current_user: Annotated[schemas.User, Depends(get_current_user)],
+    db: Session = Depends(get_db),
+):
+    db_wordlists = crud.get_word_lists(db, user_id=current_user.id)
     return db_wordlists
 
 
