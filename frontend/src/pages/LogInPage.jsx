@@ -1,10 +1,15 @@
 import Layout from "../components/Layout.jsx";
 import {useNavigate} from "react-router";
 import {useAuth} from "../contexts/UseAuth.jsx";
+import {Navigate} from "react-router-dom";
 
 export default function LogInPage() {
-    const {login} = useAuth();
+    const {login, isAuthenticated} = useAuth();
     const navigate = useNavigate();
+
+    if (isAuthenticated) {
+        return <Navigate to="/" replace/>
+    }
 
     const handleSubmit = async (e) => {
         e.preventDefault();
