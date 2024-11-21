@@ -12,6 +12,17 @@ wordlist_entries = Table(
 )
 
 
+class User(Base):
+    __tablename__ = "users"
+    id = Column(Integer, primary_key=True, index=True)
+    username = Column(String, unique=True, index=True)
+    hashed_password = Column(String)
+
+    word_lists = relationship(
+        "WordList", back_populates="user", cascade="all, delete-orphan"
+    )
+
+
 class Sentence(Base):
     __tablename__ = "sentences"
 
@@ -113,7 +124,16 @@ class WordList(Base):
     name = Column(String, index=True)
     time_modified = Column(DateTime, index=True)
     time_created = Column(DateTime, index=True)
-    # TODO: add user column after OAuth2 is implemented
+
+    user_id = Column(
+        Integer,
+        ForeignKey(
+            "users.id",
+            ondelete="CASCADE",
+        ),
+        nullable=False,
+    )
+    user = relationship("User", back_populates="word_lists")
 
     entries = relationship(
         "Entry", secondary=wordlist_entries, back_populates="word_lists"

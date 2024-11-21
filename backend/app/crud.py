@@ -3,7 +3,16 @@ from datetime import datetime
 from sqlalchemy.orm import Session
 
 import backend.app.models as models
-from backend.app.helpers import is_chinese_script
+from backend.app.helpers import is_chinese_script, hash_password
+
+
+def create_user(db: Session, username: str, password: str):
+    hashed_password = hash_password(password)
+    user = models.User(username=username, hashed_password=hashed_password)
+    db.add(user)
+    db.commit()
+    db.refresh(user)
+    return user
 
 
 def get_sentences(db: Session, limit: int = 100, offset: int = 0, keyword: str = None):
@@ -45,10 +54,13 @@ def get_dictionary_entries(db: Session, limit: int = 25, keyword: str = None):
     return query.limit(limit).all()
 
 
-def create_word_list(db: Session, name: str):
+def create_word_list(db: Session, name: str, user_id: int):
     """Create a new word list"""
     wordlist = models.WordList(
-        name=name, time_created=datetime.now(), time_modified=datetime.now()
+        name=name,
+        time_created=datetime.now(),
+        time_modified=datetime.now(),
+        user_id=user_id,
     )
 
     db.add(wordlist)
@@ -68,15 +80,15 @@ def delete_word_list(db: Session, wordlist_id: int):
     db.commit()
 
 
-def get_word_lists(db: Session):
-    """Get all word lists"""
-    return db.query(models.WordList).all()
+def get_word_lists(db: Session, user_id: int):
+    """Get all word lists for the user"""
+    return db.query(models.WordList).filter(models.WordList.user_id == user_id).all()
 
 
-def get_entry_word_lists(db: Session, entry_id: int):
+def get_entry_word_lists(db: Session, entry_id: int, user_id: int):
     """Get all word lists that contain the specified entry"""
     entry = db.query(models.Entry).filter(models.Entry.id == entry_id).first()
-    return [wordlist.id for wordlist in entry.word_lists]
+    return [wordlist.id for wordlist in entry.word_lists if wordlist.user_id == user_id]
 
 
 def add_entry_word_lists(db: Session, wordlist_ids: list[int], entry_id: int):
