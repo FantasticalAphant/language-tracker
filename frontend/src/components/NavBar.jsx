@@ -1,6 +1,7 @@
 import {Disclosure, DisclosureButton, Menu, MenuButton, MenuItem, MenuItems} from '@headlessui/react'
 import {Bars3Icon, BellIcon, XMarkIcon} from '@heroicons/react/24/outline'
-import {Link} from "react-router-dom";
+import {Link, Navigate} from "react-router-dom";
+import {useAuth} from "../contexts/UseAuth.jsx";
 
 function classNames(...classes) {
     return classes.filter(Boolean).join(' ')
@@ -8,6 +9,8 @@ function classNames(...classes) {
 
 // eslint-disable-next-line react/prop-types
 export default function Navbar({currentTab}) {
+    const {isAuthenticated, logout} = useAuth();
+
     const navigation = [
         {name: 'Dashboard', href: '/', current: true},
         {name: 'Dictionary', href: '/dictionary', current: false},
@@ -22,9 +25,22 @@ export default function Navbar({currentTab}) {
     }))
 
     const userNavigation = [
-        {name: 'Your Profile', href: '#'},
-        {name: 'Settings', href: '#'},
-        {name: 'Sign out', href: '#'},
+        {
+            name: 'Your Profile', href: '#', onClick: () => {
+                console.log("Go to Profile")
+            }
+        },
+        {
+            name: 'Settings', href: '#', onClick: () => {
+                console.log("Go to Settings")
+            }
+        },
+        {
+            name: 'Sign out', href: '#', onClick: () => {
+                logout();
+                return <Navigate to="/" replace/>
+            }
+        },
     ]
 
     return (
@@ -64,7 +80,7 @@ export default function Navbar({currentTab}) {
                             ))}
                         </div>
                     </div>
-                    <div
+                    {isAuthenticated && <div
                         className="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
                         <button
                             type="button"
@@ -96,6 +112,10 @@ export default function Navbar({currentTab}) {
                                 {userNavigation.map((item) => (
                                     <MenuItem key={item.name}>
                                         <a href={item.href}
+                                           onClick={(e) => {
+                                               e.preventDefault();
+                                               item.onClick();
+                                           }}
                                            className="block px-4 py-2 text-sm text-gray-700 data-[focus]:bg-gray-100">
                                             {item.name}
                                         </a>
@@ -103,7 +123,7 @@ export default function Navbar({currentTab}) {
                                 ))}
                             </MenuItems>
                         </Menu>
-                    </div>
+                    </div>}
                 </div>
             </div>
         </Disclosure>
