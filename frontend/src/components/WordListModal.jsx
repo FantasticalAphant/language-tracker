@@ -12,17 +12,27 @@ export default function WordListModal({isOpen, setIsOpen, entryId}) {
     const [addedLists, setAddedLists] = useState([]); // lists that added the entry
     const [removedLists, setRemovedLists] = useState([]); // lists that removed the entry
 
+    const token = localStorage.getItem("token");
+
 
     useEffect(() => {
         const getLists = async () => {
-            const responses = await Promise.all([fetch("http://localhost:8000/wordlists"), fetch(`http://localhost:8000/wordlists/entries/${Number(entryId)}`)]);
+            const responses = await Promise.all([fetch("http://localhost:8000/wordlists", {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            }), fetch(`http://localhost:8000/wordlists/entries/${Number(entryId)}`, {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            })]);
             const [listsData, checkedListsData] = await Promise.all(responses.map((response) => response.json()));
             setLists(listsData);
             setCheckedLists(checkedListsData);
         }
 
         getLists();
-    }, [isOpen, entryId]);
+    }, [isOpen, entryId, token]);
 
 
     const handleUpdate = async () => {
@@ -39,11 +49,13 @@ export default function WordListModal({isOpen, setIsOpen, entryId}) {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
                     },
                 }), fetch(`http://localhost:8000/wordlists/remove/${entryId}?${queryParams.toString()}`, {
                     method: 'DELETE',
                     headers: {
                         'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
                     }
                 })
             ]);

@@ -85,10 +85,10 @@ def get_word_lists(db: Session, user_id: int):
     return db.query(models.WordList).filter(models.WordList.user_id == user_id).all()
 
 
-def get_entry_word_lists(db: Session, entry_id: int):
+def get_entry_word_lists(db: Session, entry_id: int, user_id: int):
     """Get all word lists that contain the specified entry"""
     entry = db.query(models.Entry).filter(models.Entry.id == entry_id).first()
-    return [wordlist.id for wordlist in entry.word_lists]
+    return [wordlist.id for wordlist in entry.word_lists if wordlist.user_id == user_id]
 
 
 def add_entry_word_lists(db: Session, wordlist_ids: list[int], entry_id: int):
