@@ -11,6 +11,7 @@ import NotFoundPage from "./pages/NotFoundPage.jsx";
 import SentencePage from "./pages/SentencePage.jsx";
 import LogInPage from "./pages/LogInPage.jsx";
 import {AuthProvider, ProtectedRoute} from "./contexts/AuthContext.jsx";
+import SignUpPage from "./pages/SignUpPage.jsx";
 
 function App() {
 
@@ -25,6 +26,7 @@ function App() {
                             <Route path='*' element={<NotFoundPage/>}/>
                             <Route path={"/"} element={<HomePage/>}/>
                             <Route path={"/login"} element={<LogInPage/>}/>
+                            <Route path={"/register"} element={<SignUpPage/>}/>
                             <Route path={"/dictionary"} element={<DictionaryPage/>}/>
                             <Route path={"/hsk_lists"} element={<HSKListsPage/>}/>
                             <Route path={"/sentences"} element={<SentencesPage/>}/>

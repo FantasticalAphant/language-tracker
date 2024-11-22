@@ -1,7 +1,7 @@
 import Layout from "../components/Layout.jsx";
 import {useNavigate} from "react-router";
 import {useAuth} from "../contexts/UseAuth.jsx";
-import {Navigate} from "react-router-dom";
+import {Link, Navigate} from "react-router-dom";
 
 export default function LogInPage() {
     const {login, isAuthenticated} = useAuth();
@@ -130,9 +130,9 @@ export default function LogInPage() {
 
                         <p className="text-center text-sm/6 text-gray-500">
                             Not a member?{' '}
-                            <a href="#" className="font-semibold text-indigo-600 hover:text-indigo-500">
-                                Start a 14-day free trial
-                            </a>
+                            <Link to="/register" className="font-semibold text-indigo-600 hover:text-indigo-500">
+                                Register
+                            </Link>
                         </p>
                     </div>
                 </div>
