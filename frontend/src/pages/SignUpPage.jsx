@@ -1,7 +1,69 @@
 import Layout from "../components/Layout.jsx";
+import {useNavigate} from "react-router";
+import {useAuth} from "../contexts/UseAuth.jsx";
+import {Navigate} from "react-router-dom";
 
 export default function SignUpPage() {
-    const handleSubmit = () => {
+    const {login, isAuthenticated} = useAuth();
+    const navigate = useNavigate();
+
+    if (isAuthenticated) {
+        return <Navigate to="/" replace/>
+    }
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+
+        // TODO: move password check to before the user clicks submit
+        // maybe through keypress event?
+        if (e.target.password.value !== e.target["confirm-password"].value) {
+            console.log("Passwords do not match")
+            throw new Error("Not matching")
+        }
+
+        const formData = new URLSearchParams();
+        formData.append('username', e.target.username.value);
+        formData.append('password', e.target.password.value);
+
+        try {
+            let response = await fetch("http://localhost:8000/register", {
+                method: "POST",
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    username: formData.get("username"),
+                    password: formData.get("password"),
+                })
+            });
+
+            // TODO: update the signup page if authentication fails
+            if (!response.ok) {
+                throw new Error("Signup failed")
+            }
+
+            // log the user in
+            response = await fetch("http://localhost:8000/token", {
+                method: "POST",
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: formData
+            });
+
+            // TODO: update the login page if authentication fails
+            if (!response.ok) {
+                throw new Error("Login failed")
+            }
+
+            const {access_token} = await response.json();
+            login(access_token);
+
+            navigate("/word_lists")
+        } catch (error) {
+            // TODO: make the errors more explicit
+            console.error("Failed: ", error)
+        }
     }
 
     return (
@@ -30,13 +92,13 @@ export default function SignUpPage() {
                     <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
                         <form onSubmit={handleSubmit} className="space-y-6">
                             <div>
-                                <label htmlFor="email" className="block text-sm/6 font-medium text-gray-900">
+                                <label htmlFor="username" className="block text-sm/6 font-medium text-gray-900">
                                     Email address:
                                 </label>
                                 <div className="mt-1">
                                     <input
-                                        id="email"
-                                        name="email"
+                                        id="username"
+                                        name="username"
                                         type="email"
                                         required
                                         autoComplete="email"

@@ -55,7 +55,7 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
 
 def get_current_user(
-        token: Annotated[str, Depends(oauth2_scheme)], db: Session = Depends(get_db)
+    token: Annotated[str, Depends(oauth2_scheme)], db: Session = Depends(get_db)
 ):
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
@@ -90,24 +90,32 @@ app.add_middleware(
 router = APIRouter()
 
 
+class UserCreate(BaseModel):
+    username: str
+    password: str
+
+
 @router.post("/register")
-def register_user(username: str, password: str, db: Session = Depends(get_db)):
-    user = db.query(models.User).filter_by(username=username).first()
+def register_user(user_data: UserCreate, db: Session = Depends(get_db)):
+    user = db.query(models.User).filter_by(username=user_data.username).first()
     if user:
         raise HTTPException(status_code=400, detail="Username already registered")
-    return crud.create_user(db=db, username=username, password=password)
+
+    return crud.create_user(
+        db=db, username=user_data.username, password=user_data.password
+    )
 
 
 @router.post("/token")
 def login_for_access_token(
-        form_data: Annotated[OAuth2PasswordRequestForm, Depends()],
-        db: Session = Depends(get_db),
+    form_data: Annotated[OAuth2PasswordRequestForm, Depends()],
+    db: Session = Depends(get_db),
 ) -> schemas.Token:
     user = (
         db.query(models.User).filter(models.User.username == form_data.username).first()
     )
     if not user or not helpers.verify_password(
-            form_data.password, user.hashed_password
+        form_data.password, user.hashed_password
     ):
         raise HTTPException(status_code=400, detail="Incorrect username or password.")
     access_token_expires = timedelta(minutes=30)
@@ -152,10 +160,10 @@ def get_sentence(sentence_id: int, db: Session = Depends(get_db)):
 # Also, try to normalize simplified and traditional characters
 @router.get("/sentences", response_model=list[schemas.Sentence], tags=["sentences"])
 def get_sentences(
-        db: Session = Depends(get_db),
-        limit: int = 100,
-        offset: int = 0,
-        keyword: str = None,
+    db: Session = Depends(get_db),
+    limit: int = 100,
+    offset: int = 0,
+    keyword: str = None,
 ):
     sentences = crud.get_sentences(db, limit, offset, keyword)
     if not sentences:
@@ -165,9 +173,9 @@ def get_sentences(
 
 @router.get("/dictionary", response_model=list[schemas.Entry], tags=["dictionary"])
 def get_dictionary_entries(
-        db: Session = Depends(get_db),
-        limit: int = 20,
-        keyword: str = None,
+    db: Session = Depends(get_db),
+    limit: int = 20,
+    keyword: str = None,
 ):
     entries = crud.get_dictionary_entries(db, limit, keyword)
     if not entries:
@@ -216,9 +224,9 @@ def submit_text(user_input: TextInput):
 
 @router.post("/wordlists/", response_model=schemas.WordList, tags=["wordlists"])
 def create_wordlist(
-        wordlist: schemas.WordListUpdate,
-        current_user: Annotated[schemas.User, Depends(get_current_user)],
-        db: Session = Depends(get_db),
+    wordlist: schemas.WordListUpdate,
+    current_user: Annotated[schemas.User, Depends(get_current_user)],
+    db: Session = Depends(get_db),
 ):
     if not current_user:
         raise HTTPException(status_code=403, detail="Not authorized.")
@@ -245,8 +253,8 @@ def delete_wordlist(wordlist_id: int, db: Session = Depends(get_db)):
 
 @router.get("/wordlists/", response_model=list[schemas.WordList], tags=["wordlists"])
 def read_wordlists(
-        current_user: Annotated[schemas.User, Depends(get_current_user)],
-        db: Session = Depends(get_db),
+    current_user: Annotated[schemas.User, Depends(get_current_user)],
+    db: Session = Depends(get_db),
 ):
     db_wordlists = crud.get_word_lists(db, user_id=current_user.id)
     return db_wordlists
@@ -256,8 +264,11 @@ def read_wordlists(
 @router.get(
     "/wordlists/entries/{entry_id}", response_model=list[int], tags=["wordlists"]
 )
-def get_entry_wordlists(entry_id: int, current_user: Annotated[schemas.User, Depends(get_current_user)],
-                        db: Session = Depends(get_db)):
+def get_entry_wordlists(
+    entry_id: int,
+    current_user: Annotated[schemas.User, Depends(get_current_user)],
+    db: Session = Depends(get_db),
+):
     """Get all wordlists ids that contain a given entry (id)"""
     return crud.get_entry_word_lists(db, entry_id=entry_id, user_id=current_user.id)
 
@@ -267,9 +278,9 @@ def get_entry_wordlists(entry_id: int, current_user: Annotated[schemas.User, Dep
     tags=["wordlists"],
 )
 def add_wordlist_entries(
-        entry_id: int,
-        add_wordlist_ids: Annotated[list[int] | None, Query()] = None,
-        db: Session = Depends(get_db),
+    entry_id: int,
+    add_wordlist_ids: Annotated[list[int] | None, Query()] = None,
+    db: Session = Depends(get_db),
 ):
     """Add entry to a list of wordlists"""
     if add_wordlist_ids is not None:
@@ -281,9 +292,9 @@ def add_wordlist_entries(
     tags=["wordlists"],
 )
 def delete_wordlist_entries(
-        entry_id: int,
-        remove_wordlist_ids: Annotated[list[int] | None, Query()] = None,
-        db: Session = Depends(get_db),
+    entry_id: int,
+    remove_wordlist_ids: Annotated[list[int] | None, Query()] = None,
+    db: Session = Depends(get_db),
 ):
     """Remove entry from a list of wordlists"""
     if remove_wordlist_ids is not None:
