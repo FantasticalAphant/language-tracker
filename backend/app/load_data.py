@@ -5,8 +5,8 @@ from pathlib import Path
 
 from sqlalchemy.orm import sessionmaker
 
+from backend.app.database import engine
 from backend.app.models import Word, Entry, Sentence
-from database import engine
 
 ENCODING = "utf-8-sig"  # BOM (byte order mark)
 
@@ -34,9 +34,9 @@ def populate_hsk_lists(session, batch_size=3000):
         batch = []
         # go through each HSK file and populate the database
         with open(
-            os.path.join(HSK_LIST_DIR, f"hsk{level}.csv"),
-            mode="r",
-            encoding=ENCODING,
+                os.path.join(HSK_LIST_DIR, f"hsk{level}.csv"),
+                mode="r",
+                encoding=ENCODING,
         ) as f:
             csv_reader = csv.reader(f, delimiter="\t")
             for row in csv_reader:
