@@ -12,7 +12,6 @@ export default function Navbar({currentTab}) {
     const {isAuthenticated, logout} = useAuth();
 
     const navigation = [
-        {name: 'Dashboard', href: '/', current: true},
         {name: 'Dictionary', href: '/dictionary', current: false},
         {name: 'HSK Lists', href: '/hsk_lists', current: false},
         {name: 'Sentences', href: '/sentences', current: false},
@@ -59,11 +58,13 @@ export default function Navbar({currentTab}) {
                     </div>
                     <div className="flex flex-1 items-center justify-center sm:items-stretch sm:justify-start">
                         <div className="flex flex-shrink-0 items-center">
-                            <img
-                                alt="Your Company"
-                                src="https://img.icons8.com/?size=100&id=gHz81sjiKcd6&format=png&color=000000"
-                                className="h-8 w-auto"
-                            />
+                            <Link to="/">
+                                <img
+                                    alt="Your Company"
+                                    src="https://img.icons8.com/?size=100&id=gHz81sjiKcd6&format=png&color=000000"
+                                    className="h-8 w-auto transition-all duration-300 hover:scale-110 hover:brightness-125"
+                                />
+                            </Link>
                         </div>
                         <div className="hidden sm:ml-6 sm:flex sm:space-x-8">
                             {navigation.map((item) => (
