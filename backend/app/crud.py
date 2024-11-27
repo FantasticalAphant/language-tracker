@@ -7,6 +7,7 @@ from backend.app.helpers import is_chinese_script, hash_password
 
 
 def create_user(db: Session, username: str, password: str):
+    """Create a new user based on the username and hashed password"""
     hashed_password = hash_password(password)
     user = models.User(username=username, hashed_password=hashed_password)
     db.add(user)
@@ -30,6 +31,7 @@ def get_sentences(db: Session, limit: int = 100, offset: int = 0, keyword: str =
 
 
 def get_sentence(db: Session, sentence_id: int):
+    """Get a sentence based on its ID"""
     return db.query(models.Sentence).filter(models.Sentence.id == sentence_id).first()
 
 
@@ -71,11 +73,12 @@ def create_word_list(db: Session, name: str, user_id: int):
 
 
 def get_word_list(db: Session, wordlist_id: int):
-    """Get a single word list based on the id"""
+    """Get a single word list based on the ID"""
     return db.query(models.WordList).filter(models.WordList.id == wordlist_id).first()
 
 
 def delete_word_list(db: Session, wordlist_id: int):
+    """Delete a word list based on the ID"""
     db.query(models.WordList).filter(models.WordList.id == wordlist_id).delete()
     db.commit()
 
