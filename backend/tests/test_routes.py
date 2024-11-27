@@ -18,6 +18,10 @@ client = TestClient(app)
     ],
 )
 def test_get_hsk_level_words(level, expected_count):
+    """
+    Check if the lengths of the HSK lists match up.
+    Basically just checking if the HSK lists are actually created.
+    """
     response = client.get(
         f"/level/{level}/words",
     )
@@ -36,41 +40,66 @@ def test_get_hsk_level_words(level, expected_count):
     ],
 )
 def test_get_sentence(sentence_id, sentence_text):
+    """Check if the sentences are created."""
     response = client.get(f"/sentence/{sentence_id}")
     assert response.status_code == 200
     assert response.json()["text"] == sentence_text
 
 
 def test_get_sentences_default():
+    """Check if the number of sentences sent is correct."""
     response = client.get("/sentences")
     assert response.status_code == 200
     assert len(response.json()) == 100
 
 
 def test_get_sentences_limit():
+    """Check if the sentence limit is applied."""
     response = client.get("/sentences", params={"limit": 30000})
     assert response.status_code == 200
     assert len(response.json()) == 30000
 
 
 def test_get_dictionary_entries_default():
+    """Check if the dictionary entries are created."""
     response = client.get("/dictionary")
     assert response.status_code == 200
     assert len(response.json()) == 20
 
 
 def test_get_dictionary_entries_limit():
+    """Check if the entry limit is applied.."""
     response = client.get("/dictionary", params={"limit": 5000})
     assert response.status_code == 200
     assert len(response.json()) == 5000
 
 
-def test_submit_text():
-    response = client.post("/analyzer", json={})
+@pytest.mark.parametrize(
+    "initial_text,parsed_text",
+    [
+        ("这是个句子。", ["这", "是", "个", "句子"]),
+    ],
+)
+def test_analyzer_submit_text(initial_text, parsed_text):
+    response = client.post("/analyzer", json={
+        "text": initial_text,
+    })
+    assert response.status_code == 200
+    assert response.json()["text"] == parsed_text
 
 
-def test_submit_test():
-    response = client.post("/translator", json={})
+@pytest.mark.parametrize(
+    "initial_text,parsed_text",
+    [
+        ("I wish I didn't have to live a life full of regrets.", "我希望我的人生不必充满遗憾。"),
+    ],
+)
+def test_translator_submit_text(initial_text, parsed_text):
+    response = client.post("/translator", json={
+        "text": initial_text
+    })
+    assert response.status_code == 200
+    assert response.json()["text"] == parsed_text
 
 
 def test_create_wordlist():
