@@ -169,8 +169,6 @@ def get_sentences(
 ):
     """Get all sentences (subject to limit/keyword)."""
     sentences = crud.get_sentences(db, limit, offset, keyword)
-    if not sentences:
-        raise HTTPException(status_code=404, detail="Sentences not found")
     return sentences
 
 
@@ -180,10 +178,8 @@ def get_dictionary_entries(
         limit: int = 20,
         keyword: str = None,
 ):
-    """Get all entries in a dictionary (subject to limit/keyword."""
+    """Get all entries in a dictionary (subject to limit/keyword)."""
     entries = crud.get_dictionary_entries(db, limit, keyword)
-    if not entries:
-        raise HTTPException(status_code=404, detail="Dictionary entries not found")
     return entries
 
 
