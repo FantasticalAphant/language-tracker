@@ -40,7 +40,7 @@ def get_words_by_level(db: Session, level: int):
     return db.query(models.Word).filter(models.Word.level_id == level).all()
 
 
-def get_dictionary_entries(db: Session, limit: int = 25, keyword: str = None):
+def get_dictionary_entries(db: Session, limit: int = 20, keyword: str = None):
     """Get all dictionary entries"""
     # TODO: search character or pinyin depending on keyword type
     query = db.query(models.Entry)
