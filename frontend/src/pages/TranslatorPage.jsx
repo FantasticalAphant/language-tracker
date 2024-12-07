@@ -34,12 +34,13 @@ export default function TranslatorPage() {
     return (
         <>
             <Layout headerName={"Translator (DeepL)"} tabName={"Translator"}>
-                <ul className="list-disc">
-                    <TextArea onTextSubmit={handleSubmit} text={text} setText={setText}
-                              action={"translate"}/>
-                </ul>
+                <TextArea onTextSubmit={handleSubmit} text={text} setText={setText}
+                          action={"translate"}/>
+
+                <div className="mt-10 text-center text-2xl text-orange-700">
+                    {data && data.text}
+                </div>
             </Layout>
-            {data && data.text}
         </>
     )
 }
