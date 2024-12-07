@@ -36,12 +36,13 @@ export default function AnalyzerPage() {
     return (
         <>
             <Layout headerName={name} tabName={name}>
-                <ul className="list-disc">
-                    <TextArea onTextSubmit={handleSubmit} text={text} setText={setText}
-                              action={"analyze"}/>
-                </ul>
+                <TextArea onTextSubmit={handleSubmit} text={text} setText={setText}
+                          action={"analyze"}/>
+
+                <div className="mt-10 text-center text-2xl text-orange-700">
+                    {data && JSON.stringify(data.text)}
+                </div>
             </Layout>
-            {data && JSON.stringify(data.text)}
         </>
     )
 }
