@@ -1,10 +1,5 @@
 import {Link} from "react-router-dom";
 
-const people = [
-    {name: 'Lindsay Walton', title: 'Front-end Developer', email: 'lindsay.walton@example.com', role: 'Member'},
-    // More people...
-]
-
 // eslint-disable-next-line react/prop-types
 export default function IndividualWordList({wordList}) {
     if (!wordList) {

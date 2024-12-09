@@ -4,6 +4,7 @@ from fastapi.testclient import TestClient
 from sqlalchemy.orm import sessionmaker
 
 from backend.app.database import get_db
+from backend.app.helpers import hash_password
 from backend.app.main import app
 
 SQLALCHEMY_DATABASE_URL = "sqlite:///./test.db"
@@ -72,6 +73,50 @@ def client(session):
     app.dependency_overrides[get_db] = override_get_db
     yield TestClient(app)
     del app.dependency_overrides[get_db]
+
+
+@pytest.fixture()
+def user():
+    return {
+        "username": "username@test.com",
+        "password": "password",
+        "hashed_password": hash_password("password"),
+    }
+
+
+@pytest.fixture()
+def registered_user(client, user):
+    response = client.post("/register", json=user)
+    assert response.status_code == 200
+    return user
+
+
+@pytest.fixture()
+def created_wordlist(client, registered_user):
+    token = test_login(client, registered_user)
+    response = client.post(
+        "/wordlists",
+        json={"name": "test"},
+        headers={"Authorization": f"Bearer {token}"},
+    )
+    assert response.status_code == 200
+    assert response.json()["name"] == "test"
+    return response.json()
+
+
+def test_login(client, registered_user):
+    response = client.post(
+        "/token",
+        data={
+            "username": registered_user["username"],
+            "password": registered_user["password"],
+        },
+        headers={"Content-Type": "application/x-www-form-urlencoded"},
+    )
+    assert response.status_code == 200
+    token = response.json()["access_token"]
+    assert token is not None
+    return token
 
 
 @pytest.mark.parametrize(
@@ -149,9 +194,12 @@ def test_get_dictionary_entries_limit(client):
     ],
 )
 def test_analyzer_submit_text(client, initial_text, parsed_text):
-    response = client.post("/analyzer", json={
-        "text": initial_text,
-    })
+    response = client.post(
+        "/analyzer",
+        json={
+            "text": initial_text,
+        },
+    )
     assert response.status_code == 200
     assert response.json()["text"] == parsed_text
 
@@ -159,36 +207,47 @@ def test_analyzer_submit_text(client, initial_text, parsed_text):
 @pytest.mark.parametrize(
     "initial_text,parsed_text",
     [
-        ("I wish I didn't have to live a life full of regrets.", "我希望我的人生不必充满遗憾。"),
+        (
+            "I wish I didn't have to live a life full of regrets.",
+            "我希望我的人生不必充满遗憾。",
+        ),
     ],
 )
 def test_translator_submit_text(client, initial_text, parsed_text):
-    response = client.post("/translator", json={
-        "text": initial_text
-    })
+    response = client.post("/translator", json={"text": initial_text})
     assert response.status_code == 200
     assert response.json()["text"] == parsed_text
 
 
-def test_create_wordlist(client):
-    response = client.post("/wordlists", json={})
-
-
-def test_read_wordlist(client):
+def test_read_wordlist_without_auth(client, created_wordlist):
     response = client.get("/wordlists/1")
+    assert response.status_code == 401
 
 
-def test_read_wordlists(client):
-    response = client.get("/wordlists")
+def test_read_wordlist_with_auth(client, registered_user, created_wordlist):
+    token = test_login(client, registered_user)
+    response = client.get("/wordlists/1", headers={"Authorization": f"Bearer {token}"})
+    assert response.status_code == 200
 
 
-def test_get_entry_wordlists(client):
-    response = client.get("/wordlists/entries/1")
+def test_read_wordlists(client, registered_user, created_wordlist):
+    token = test_login(client, registered_user)
+    response = client.get("/wordlists", headers={"Authorization": f"Bearer {token}"})
+    assert response.status_code == 200
+    assert len(response.json()) == 1
+
+
+def test_delete_wordlists(client, registered_user, created_wordlist):
+    token = test_login(client, registered_user)
+    client.delete("/wordlists/1", headers={"Authorization": f"Bearer {token}"})
+    response = client.get("/wordlists", headers={"Authorization": f"Bearer {token}"})
+    assert response.status_code == 200
+    assert len(response.json()) == 0
 
 
 def test_update_wordlists(client):
     response = client.post("/wordlists/entries/1", json={})
 
 
-def test_delete_wordlists(client):
-    response = client.delete("/wordlists/1")
+def test_get_entry_wordlists(client):
+    response = client.get("/wordlists/entries/1")
