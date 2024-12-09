@@ -101,6 +101,12 @@ def created_wordlist(client, registered_user):
     )
     assert response.status_code == 200
     assert response.json()["name"] == "test"
+
+    # Add some entry numbers 1, 3, 5 to the list
+    client.post("/wordlists/add/1", params={"add_wordlist_ids": [1]})
+    client.post("/wordlists/add/3", params={"add_wordlist_ids": [1]})
+    client.post("/wordlists/add/5", params={"add_wordlist_ids": [1]})
+
     return response.json()
 
 
@@ -230,6 +236,22 @@ def test_read_wordlist_with_auth(client, registered_user, created_wordlist):
     assert response.status_code == 200
 
 
+def test_create_wordlist_without_auth(client):
+    response = client.post("/wordlists", json={"name": "test"})
+    assert response.status_code == 401
+
+
+def test_create_wordlist_with_auth(client, registered_user):
+    token = test_login(client, registered_user)
+    response = client.post(
+        "/wordlists",
+        json={"name": "test"},
+        headers={"Authorization": f"Bearer {token}"},
+    )
+    assert response.status_code == 200
+    assert response.json()["name"] == "test"
+
+
 def test_read_wordlists(client, registered_user, created_wordlist):
     token = test_login(client, registered_user)
     response = client.get("/wordlists", headers={"Authorization": f"Bearer {token}"})
@@ -245,9 +267,65 @@ def test_delete_wordlists(client, registered_user, created_wordlist):
     assert len(response.json()) == 0
 
 
+# TODO: need to implement this endpoint
 def test_update_wordlists(client):
     response = client.post("/wordlists/entries/1", json={})
 
 
-def test_get_entry_wordlists(client):
-    response = client.get("/wordlists/entries/1")
+def test_get_entry_not_in_wordlist(client, registered_user, created_wordlist):
+    token = test_login(client, registered_user)
+    response = client.get(
+        "/wordlists/entries/1", headers={"Authorization": f"Bearer {token}"}
+    )
+    assert response.status_code == 200
+    # should return the ids for all lists containing entry number 1
+    assert response.json() == [1]
+
+
+def test_get_entry_in_wordlist(client, registered_user, created_wordlist):
+    token = test_login(client, registered_user)
+    response = client.get(
+        "/wordlists/entries/2", headers={"Authorization": f"Bearer {token}"}
+    )
+    assert response.status_code == 200
+    assert len(response.json()) == 0
+
+
+def test_add_wordlist_entries(client, registered_user, created_wordlist):
+    token = test_login(client, registered_user)
+    # list should already contain entries 1, 3, and 5
+
+    response = client.get(
+        "/wordlists/entries/6", headers={"Authorization": f"Bearer {token}"}
+    )
+    assert response.status_code == 200
+    assert len(response.json()) == 0
+
+    # add entry number 6 to the list
+    client.post("/wordlists/add/6", params={"add_wordlist_ids": [1]})
+
+    response = client.get(
+        "/wordlists/entries/6", headers={"Authorization": f"Bearer {token}"}
+    )
+    assert response.status_code == 200
+    assert response.json() == [1]
+
+
+def test_delete_wordlist_entries(client, registered_user, created_wordlist):
+    token = test_login(client, registered_user)
+    # list should already contain entries 1, 3, and 5
+
+    response = client.get(
+        "/wordlists/entries/5", headers={"Authorization": f"Bearer {token}"}
+    )
+    assert response.status_code == 200
+    assert response.json() == [1]
+
+    # remove entry 5 from the wordlist
+    client.delete("/wordlists/remove/5", params={"remove_wordlist_ids": [1]})
+
+    response = client.get(
+        "/wordlists/entries/5", headers={"Authorization": f"Bearer {token}"}
+    )
+    assert response.status_code == 200
+    assert len(response.json()) == 0
