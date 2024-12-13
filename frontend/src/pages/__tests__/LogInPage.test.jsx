@@ -1,7 +1,7 @@
 import {describe, expect, it} from "vitest";
 
-describe('NotFoundPage', () => {
-    it('renders 404 page', () => {
+describe('LogInPage', () => {
+    it('renders page for user login', () => {
         expect(true).toBe(true)
     })
 })
