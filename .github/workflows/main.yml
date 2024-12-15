@@ -9,6 +9,12 @@ permissions:
 jobs:
   backend:
     runs-on: ubuntu-latest
+
+    env:
+      TRANSLATION_API_KEY: ${{ secrets.TRANSLATION_API_KEY }}
+      TRANSLATION_API_URL: ${{ secrets.TRANSLATION_API_URL }}
+      SECRET_KEY: ${{ secrets.SECRET_KEY }}
+      ALGORITHM: ${{ secrets.ALGORITHM }}
     
     services:
       redis:
