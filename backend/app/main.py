@@ -1,4 +1,3 @@
-import logging
 import os
 import pickle
 from datetime import timedelta
@@ -21,8 +20,6 @@ import backend.app.helpers as helpers
 import backend.app.schemas as schemas
 from backend.app import models
 from backend.app.database import get_db
-
-logging.basicConfig(level=logging.INFO)
 
 # Set up file paths for jieba
 BASE_DIR = Path(__file__).resolve().parent.parent
