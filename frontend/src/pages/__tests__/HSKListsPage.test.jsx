@@ -1,7 +1,14 @@
-import {describe, expect, it} from "vitest";
+import {describe, it} from "vitest";
+import HSKListsPage from "../HSKListsPage.jsx";
+import {render} from "@testing-library/react";
+import {TestWrapper} from "../../../utils/test-utils.jsx";
 
 describe('HSKListsPage', () => {
     it('renders page for HSK lists', () => {
-        expect(true).toBe(true)
+        render(
+            <TestWrapper>
+                <HSKListsPage/>
+            </TestWrapper>
+        );
     })
 })
