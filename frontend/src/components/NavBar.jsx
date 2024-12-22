@@ -60,8 +60,8 @@ export default function Navbar({currentTab}) {
                         <div className="flex flex-shrink-0 items-center">
                             <Link to="/">
                                 <img
-                                    alt="Your Company"
-                                    src="https://img.icons8.com/?size=100&id=gHz81sjiKcd6&format=png&color=000000"
+                                    alt="Home Page"
+                                    src="/cap.png"
                                     className="h-8 w-auto transition-all duration-300 hover:scale-110 hover:brightness-125"
                                 />
                             </Link>
