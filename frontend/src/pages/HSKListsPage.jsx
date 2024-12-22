@@ -42,9 +42,9 @@ export default function HSKListsPage() {
                             <div className="mt-4 sm:ml-10 sm:mt-0">
                                 <nav className="-mb-px flex space-x-8">
                                     {tabs.map((tab) => (
-                                        <a
+                                        <button
+                                            type="button"
                                             key={tab.name}
-                                            href={"javascript:;"}
                                             onClick={() => setActiveTab(tab.name)}
                                             aria-current={tab.name === activeTab ? 'page' : undefined}
                                             className={classNames(
@@ -55,7 +55,7 @@ export default function HSKListsPage() {
                                             )}
                                         >
                                             {tab.name}
-                                        </a>
+                                        </button>
                                     ))}
                                 </nav>
                             </div>
