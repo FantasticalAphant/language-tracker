@@ -74,7 +74,7 @@ def get_current_user(
 
 
 # Use redis to cache HSK lists
-r = redis.Redis(host="localhost", port=6379, db=0)
+r = redis.Redis(host=os.getenv("REDIS_HOST", "localhost"), port=6379, db=0)
 
 # Enable CORS
 app.add_middleware(

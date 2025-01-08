@@ -10,6 +10,9 @@ services:
       - ./backend/app/tracker.db:/app/backend/app/tracker.db  # Persist SQLite file
     environment:
       - DATABASE_URL=sqlite:///./app/tracker.db   # SQLite database URL for FastAPI
+      - REDIS_HOST=redis
+    depends_on:
+      - redis
 
   frontend:
     build:
@@ -21,3 +24,15 @@ services:
       - /app/node_modules
     stdin_open: true
     tty: true
+
+  redis:
+      image: redis:alpine
+      container_name: redis_cache
+      ports:
+        - "6379:6379"
+      volumes:
+        - redis_data:/data  # Persist Redis data
+      command: redis-server --save 60 1 --loglevel warning  # Save every 60 sec if at least 1 change
+
+volumes:
+  redis_data:  # Define the named volume
