@@ -12,11 +12,8 @@ RUN npm install
 # Copy the source code
 COPY . .
 
-# Build the React app
-RUN npm run build
-
-# Expose port 5173 to the Docker network
-EXPOSE 5173
+# Expose port 3000 to the Docker network
+EXPOSE 3000
 
 # Run the app
-CMD ["npm", "run", "dev", "--", "--host"]
+CMD ["npm", "run", "dev", "--", "--host", "--port", "3000"]

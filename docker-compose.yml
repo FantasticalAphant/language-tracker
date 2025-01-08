@@ -1,24 +1,23 @@
 services:
   backend:
     build:
-      context: ./backend
+      context: .
     container_name: fastapi_app
     ports:
       - "8000:8000"
     volumes:
-      - ./backend/app:/app
-      - ./backend/app/tracker.db:/app/tracker.db  # Persist SQLite file
+      - ./backend:/app/backend
+      - ./backend/app/tracker.db:/app/backend/app/tracker.db  # Persist SQLite file
     environment:
-      - DATABASE_URL=sqlite:///./tracker.db   # SQLite database URL for FastAPI
+      - DATABASE_URL=sqlite:///./app/tracker.db   # SQLite database URL for FastAPI
 
   frontend:
     build:
       context: ./frontend
     container_name: react_app
     ports:
-      - "5173:5173"
+      - "3000:3000"
     volumes:
-      - /usr/src/app/node_modules
-    #   - ./frontend:/app
+      - /app/node_modules
     stdin_open: true
     tty: true
