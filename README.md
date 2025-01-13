@@ -1,18 +1,8 @@
 # Language Tracker
 
-## Running Locally
-
-### Setting up redis
-[Installation Information](https://redis.io/docs/latest/operate/oss_and_stack/install/install-redis/)
-
----
-
-### Setting up the backend
-`$ cd path/to/backend` 
-
-#### Setting up environment variables:
+### Setting up environment variables:
 ```sh
-$ vim app/.env
+$ vim path/to/backend/app/.env
 ```
 
 ```env
@@ -27,6 +17,23 @@ ALGORITHM=HS256
 ```sh
 $ python3 -c "import secrets; print(secrets.token_hex(32))" # run this to generate the SECRET_KEY
 ```
+
+### Setting up Redis (if running on own machine)
+[Installation Information](https://redis.io/docs/latest/operate/oss_and_stack/install/install-redis/)
+
+---
+
+## Running on Docker
+```sh
+$ docker-compose up --build # at the root directory
+```
+
+---
+
+## Running Locally
+
+### Setting up the backend
+`$ cd path/to/backend/app` 
 
 #### Install Python packages:
 `$ pip install -r requirements.txt`
