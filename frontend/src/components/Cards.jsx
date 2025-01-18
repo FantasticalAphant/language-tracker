@@ -1,4 +1,5 @@
 import {EllipsisVerticalIcon} from '@heroicons/react/20/solid'
+import {Link} from "react-router-dom";
 
 function classNames(...classes) {
     return classes.filter(Boolean).join(' ')
@@ -23,10 +24,10 @@ export default function Cards({wordLists}) {
                         <div
                             className="flex flex-1 items-center justify-between truncate rounded-r-md border-b border-r border-t border-gray-200 bg-white">
                             <div className="flex-1 truncate px-4 py-2 text-sm">
-                                <a href={`http://localhost:3000/word_lists/${wordList.id}`}
-                                   className="font-medium text-gray-900 hover:text-gray-600">
+                                <Link to={`/word_lists/${wordList.id}`}
+                                      className="font-medium text-gray-900 hover:text-gray-600">
                                     {wordList.name}
-                                </a>
+                                </Link>
                                 {/*TODO: print number of words in the list*/}
                                 <p className="text-gray-500">{wordList.entries.length} Words</p>
                             </div>
