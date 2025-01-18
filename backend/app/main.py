@@ -76,10 +76,14 @@ def get_current_user(
 # Use redis to cache HSK lists
 r = redis.Redis(host=os.getenv("REDIS_HOST", "localhost"), port=6379, db=0)
 
+# Use localhost:3000 as the default host and port
+# The value for ALLOWED_ORIGINS is a comma-separated string of URIs
+allowed_origins = os.getenv("ALLOWED_ORIGINS", "http://localhost:3000").split(",")
+
 # Enable CORS
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000"],  # here
+    allow_origins=allowed_origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
