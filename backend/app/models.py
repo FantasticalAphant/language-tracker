@@ -111,7 +111,7 @@ class Word(Base):
 
     # Create another class with level_id and level information?
     # These fields might also be redundant
-    level_id = Column(Integer, ForeignKey("hsk_levels.id"))
+    level_id = Column(Integer, ForeignKey("hsk_levels.id"), nullable=True)
     level = relationship("HSKLevel", back_populates="word")
 
     def __repr__(self):
