@@ -74,7 +74,11 @@ def get_current_user(
 
 
 # Use redis to cache HSK lists
-r = redis.Redis(host=os.getenv("REDIS_HOST", "localhost"), port=6379, db=0)
+redis_url = os.getenv("REDIS_URL", "redis://localhost:6379")
+if os.getenv("REDIS_HOST") == "redis":  # If using Docker
+    redis_url = "redis://redis:6379"
+
+r = redis.from_url(redis_url)
 
 # Use localhost:3000 as the default host and port
 # The value for ALLOWED_ORIGINS is a comma-separated string of URIs
