@@ -18,10 +18,9 @@ export default function SentencesPage() {
                         : `${API_URL}/sentences`
                 );
                 const result = await response.json();
-                console.log(result);
                 setData(result);
             } catch (error) {
-                console.log("Error fetching data:", error);
+                console.error("Error fetching data:", error);
             }
         };
 

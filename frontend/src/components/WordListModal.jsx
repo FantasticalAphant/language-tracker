@@ -67,7 +67,6 @@ export default function WordListModal({isOpen, setIsOpen, entryId}) {
 
             // Optionally handle the response here
             const results = await Promise.all(responses.map((response) => response.json()));
-            console.log(results);
 
             setIsOpen(false);
         } catch (error) {

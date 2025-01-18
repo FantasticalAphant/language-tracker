@@ -5,7 +5,6 @@ export default function IndividualWordList({wordList}) {
     if (!wordList) {
         return null;
     }
-    console.log(wordList);
 
     return (
         <div className="px-4 sm:px-6 lg:px-8">

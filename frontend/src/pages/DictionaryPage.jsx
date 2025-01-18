@@ -19,11 +19,9 @@ export default function DictionaryPage() {
                         : `${API_URL}/dictionary`
                 );
                 const data = await response.json();
-                console.log(data);
-                console.log(query);
                 setData(data);
             } catch (err) {
-                console.log(err);
+                console.error(err);
             }
         };
 

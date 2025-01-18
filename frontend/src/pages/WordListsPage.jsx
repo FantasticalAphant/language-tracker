@@ -44,7 +44,7 @@ export default function WordListsPage() {
                 setData(data)
                 setIsLoading(false);
             })
-            .catch(err => console.log(err));
+            .catch(err => console.error(err));
     }, [token]);
 
     const name = "Word Lists";

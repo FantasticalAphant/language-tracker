@@ -9,11 +9,9 @@ export default function SentencePage() {
 
     useEffect(() => {
         const fetchData = async () => {
-            console.log(sentenceId)
             const response = await fetch(`${API_URL}/sentence/${sentenceId}`);
             const data = await response.json();
             setSentence(data);
-            console.log(data)
         }
         fetchData();
     }, [sentenceId])

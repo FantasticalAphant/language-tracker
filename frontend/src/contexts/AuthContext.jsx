@@ -38,7 +38,6 @@ export const AuthProvider = ({children}) => {
     }, [])
 
     const login = (newToken) => {
-        console.log(`Setting token to ${newToken}`);
         localStorage.setItem("token", newToken);
         setIsAuthenticated(true);
     }
@@ -58,7 +57,6 @@ export const AuthProvider = ({children}) => {
 export const ProtectedRoute = ({children}) => {
     const {isAuthenticated} = useContext(AuthContext);
 
-    console.log(`Protected Route: ${isAuthenticated}`);
     if (!isAuthenticated) {
         return <Navigate to="/login" replace/>;
     }

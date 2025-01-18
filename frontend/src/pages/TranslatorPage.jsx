@@ -24,7 +24,6 @@ export default function TranslatorPage() {
             }
 
             const data = await response.json();
-            console.log('Success:', data);
             setData(data)
             setText("");
         } catch (error) {
