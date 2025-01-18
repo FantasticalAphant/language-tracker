@@ -9,7 +9,6 @@ services:
       - ./backend:/app/backend
       - ./backend/app/tracker.db:/app/backend/app/tracker.db  # Persist SQLite file
     environment:
-      - DATABASE_URL=sqlite:///./app/tracker.db   # SQLite database URL for FastAPI
       - REDIS_HOST=redis
     depends_on:
       - redis
