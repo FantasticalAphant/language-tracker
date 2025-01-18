@@ -41,7 +41,7 @@ tags_metadata = [
     {"name": "analyzer", "description": "Text analyzer"},
     {"name": "translator", "description": "Text translator"},
     {
-        "name": "user lists",
+        "name": "user_lists",
         "description": "User-created vocabulary lists",
     },
 ]
@@ -221,7 +221,7 @@ def submit_text(user_input: TextInput):
         raise HTTPException(status_code=500, detail=str(e))
 
 
-@router.post("/wordlists/", response_model=schemas.WordList, tags=["wordlists"])
+@router.post("/wordlists/", response_model=schemas.WordList, tags=["user_lists"])
 def create_wordlist(
         wordlist: schemas.WordListUpdate,
         current_user: Annotated[schemas.User, Depends(get_current_user)],
@@ -235,7 +235,7 @@ def create_wordlist(
 
 
 @router.get(
-    "/wordlists/{wordlist_id}", response_model=schemas.WordList, tags=["wordlists"]
+    "/wordlists/{wordlist_id}", response_model=schemas.WordList, tags=["user_lists"]
 )
 def read_wordlist(
         wordlist_id: int,
@@ -253,14 +253,14 @@ def read_wordlist(
     return db_wordlist
 
 
-@router.delete("/wordlists/{wordlist_id}", tags=["wordlists"])
+@router.delete("/wordlists/{wordlist_id}", tags=["user_lists"])
 def delete_wordlist(wordlist_id: int, db: Session = Depends(get_db)):
     """Delete a wordlist based on ID."""
     # TODO: check if the user owns the word list
     crud.delete_word_list(db, wordlist_id=wordlist_id)
 
 
-@router.get("/wordlists/", response_model=list[schemas.WordList], tags=["wordlists"])
+@router.get("/wordlists/", response_model=list[schemas.WordList], tags=["user_lists"])
 def read_wordlists(
         current_user: Annotated[schemas.User, Depends(get_current_user)],
         db: Session = Depends(get_db),
@@ -272,7 +272,7 @@ def read_wordlists(
 
 # TODO: come up with a better endpoint
 @router.get(
-    "/wordlists/entries/{entry_id}", response_model=list[int], tags=["wordlists"]
+    "/wordlists/entries/{entry_id}", response_model=list[int], tags=["user_lists"]
 )
 def get_entry_wordlists(
         entry_id: int,
@@ -285,7 +285,7 @@ def get_entry_wordlists(
 
 @router.post(
     "/wordlists/add/{entry_id}",
-    tags=["wordlists"],
+    tags=["user_lists"],
 )
 def add_wordlist_entries(
         entry_id: int,
@@ -299,7 +299,7 @@ def add_wordlist_entries(
 
 @router.delete(
     "/wordlists/remove/{entry_id}",
-    tags=["wordlists"],
+    tags=["user_lists"],
 )
 def delete_wordlist_entries(
         entry_id: int,
