@@ -3,6 +3,7 @@ import {MagnifyingGlassIcon} from '@heroicons/react/24/outline'
 import {useEffect, useState} from "react";
 import List from "../components/List.jsx";
 import Layout from "../components/Layout.jsx";
+import {API_URL} from "../../utils/api.js";
 
 export default function DictionaryPage() {
     const [data, setData] = useState([])
@@ -14,8 +15,8 @@ export default function DictionaryPage() {
             try {
                 const response = await fetch(
                     query
-                        ? `http://localhost:8000/dictionary?keyword=${query}`
-                        : "http://localhost:8000/dictionary"
+                        ? `${API_URL}/dictionary?keyword=${query}`
+                        : `${API_URL}/dictionary`
                 );
                 const data = await response.json();
                 console.log(data);

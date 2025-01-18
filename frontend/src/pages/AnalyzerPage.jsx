@@ -1,6 +1,7 @@
 import {useState} from "react";
 import TextArea from "../components/TextArea.jsx";
 import Layout from "../components/Layout.jsx";
+import {API_URL} from "../../utils/api.js";
 
 export default function AnalyzerPage() {
     const [data, setData] = useState([])
@@ -10,7 +11,7 @@ export default function AnalyzerPage() {
         event.preventDefault();
 
         try {
-            const response = await fetch('http://localhost:8000/analyzer', {
+            const response = await fetch(`${API_URL}/analyzer`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

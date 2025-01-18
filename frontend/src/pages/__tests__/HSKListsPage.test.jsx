@@ -2,6 +2,7 @@ import {beforeEach, describe, expect, it, vi} from "vitest";
 import HSKListsPage from "../HSKListsPage.jsx";
 import {act, render, screen, waitFor} from "@testing-library/react";
 import {TestWrapper} from "../../../utils/test-utils.jsx";
+import {API_URL} from "../../../utils/api.js";
 
 const level1Words = [
     {
@@ -67,7 +68,7 @@ describe('HSKListsPage', () => {
             expect(word2).toHaveLength(2);
         });
 
-        expect(fetch).toHaveBeenCalledWith('http://localhost:8000/level/1/words');
+        expect(fetch).toHaveBeenCalledWith(`${API_URL}/level/1/words`);
 
         expect(screen.getByText('2 Words')).toBeInTheDocument();
     });
@@ -84,7 +85,7 @@ describe('HSKListsPage', () => {
         });
 
         await waitFor(() => {
-            expect(fetch).toHaveBeenCalledWith('http://localhost:8000/level/2/words');
+            expect(fetch).toHaveBeenCalledWith(`${API_URL}/level/1/words`);
         });
 
         await waitFor(() => {

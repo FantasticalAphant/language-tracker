@@ -4,6 +4,7 @@ import {Dialog, DialogBackdrop, DialogPanel, DialogTitle} from '@headlessui/reac
 import {CheckIcon} from '@heroicons/react/24/outline'
 import {useEffect, useState} from "react";
 import {useAuth} from "../contexts/UseAuth.jsx";
+import {API_URL} from "../../utils/api.js";
 
 // eslint-disable-next-line react/prop-types
 export default function WordListModal({isOpen, setIsOpen, entryId}) {
@@ -20,11 +21,11 @@ export default function WordListModal({isOpen, setIsOpen, entryId}) {
     useEffect(() => {
         if (isOpen && isAuthenticated) {
             const getLists = async () => {
-                const responses = await Promise.all([fetch("http://localhost:8000/wordlists", {
+                const responses = await Promise.all([fetch(`${API_URL}/wordlists`, {
                     headers: {
                         'Authorization': `Bearer ${token}`
                     }
-                }), fetch(`http://localhost:8000/wordlists/entries/${Number(entryId)}`, {
+                }), fetch(`${API_URL}/wordlists/entries/${Number(entryId)}`, {
                     headers: {
                         'Authorization': `Bearer ${token}`
                     }
@@ -49,13 +50,13 @@ export default function WordListModal({isOpen, setIsOpen, entryId}) {
 
         try {
             const responses = await Promise.all([
-                fetch(`http://localhost:8000/wordlists/add/${entryId}?${queryParams.toString()}`, {
+                fetch(`${API_URL}/wordlists/add/${entryId}?${queryParams.toString()}`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
                         'Authorization': `Bearer ${token}`
                     },
-                }), fetch(`http://localhost:8000/wordlists/remove/${entryId}?${queryParams.toString()}`, {
+                }), fetch(`${API_URL}/wordlists/remove/${entryId}?${queryParams.toString()}`, {
                     method: 'DELETE',
                     headers: {
                         'Content-Type': 'application/json',

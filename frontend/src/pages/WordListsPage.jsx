@@ -4,6 +4,7 @@ import Cards from "../components/Cards.jsx";
 import {useParams} from "react-router";
 import Layout from "../components/Layout.jsx";
 import IndividualWordList from "../components/IndividualWordList.jsx";
+import {API_URL} from "../../utils/api.js";
 
 export default function WordListsPage() {
     const token = localStorage.getItem("token");
@@ -15,7 +16,7 @@ export default function WordListsPage() {
     async function handleSubmit(event) {
         event.preventDefault();
         setListName("");
-        const response = await fetch("http://localhost:8000/wordlists/", {
+        const response = await fetch(`${API_URL}/wordlists/`, {
                 method: "POST",
                 headers: {
                     'Content-Type': 'application/json',
@@ -32,7 +33,7 @@ export default function WordListsPage() {
 
     useEffect(() => {
         setIsLoading(true);
-        fetch("http://localhost:8000/wordlists", {
+        fetch(`${API_URL}/wordlists`, {
             headers: {
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${token}`

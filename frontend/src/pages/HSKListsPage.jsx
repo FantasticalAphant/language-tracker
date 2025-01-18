@@ -1,6 +1,7 @@
 import {useEffect, useState} from "react";
 import List from "../components/List.jsx";
 import Layout from "../components/Layout.jsx";
+import {API_URL} from "../../utils/api.js";
 
 // TODO: make current change when the user clicks on a tab
 const tabs = [
@@ -22,7 +23,7 @@ export default function HSKListsPage() {
     const [activeTab, setActiveTab] = useState(1);
 
     useEffect(() => {
-        fetch(`http://localhost:8000/level/${activeTab}/words`)
+        fetch(`${API_URL}/level/${activeTab}/words`)
             .then(res => res.json())
             .then(data => {
                 console.log(data)

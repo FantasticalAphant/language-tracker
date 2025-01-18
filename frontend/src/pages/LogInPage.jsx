@@ -2,6 +2,7 @@ import Layout from "../components/Layout.jsx";
 import {useNavigate} from "react-router";
 import {useAuth} from "../contexts/UseAuth.jsx";
 import {Link, Navigate} from "react-router-dom";
+import {API_URL} from "../../utils/api.js";
 
 export default function LogInPage() {
     const {login, isAuthenticated} = useAuth();
@@ -19,7 +20,7 @@ export default function LogInPage() {
         formData.append('password', e.target.password.value);
 
         try {
-            const response = await fetch("http://localhost:8000/token", {
+            const response = await fetch(`${API_URL}/token`, {
                 method: "POST",
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded',

@@ -2,6 +2,7 @@ import Layout from "../components/Layout.jsx";
 import {useNavigate} from "react-router";
 import {useAuth} from "../contexts/UseAuth.jsx";
 import {Navigate} from "react-router-dom";
+import {API_URL} from "../../utils/api.js";
 
 export default function SignUpPage() {
     const {login, isAuthenticated} = useAuth();
@@ -26,7 +27,7 @@ export default function SignUpPage() {
         formData.append('password', e.target.password.value);
 
         try {
-            let response = await fetch("http://localhost:8000/register", {
+            let response = await fetch(`${API_URL}/register`, {
                 method: "POST",
                 headers: {
                     'Content-Type': 'application/json',
@@ -43,7 +44,7 @@ export default function SignUpPage() {
             }
 
             // log the user in
-            response = await fetch("http://localhost:8000/token", {
+            response = await fetch(`${API_URL}/token`, {
                 method: "POST",
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded',

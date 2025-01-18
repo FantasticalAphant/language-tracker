@@ -1,5 +1,6 @@
 import {createContext, useContext, useEffect, useState} from "react";
 import {Navigate} from "react-router-dom";
+import {API_URL} from "../../utils/api.js";
 
 export const AuthContext = createContext(null)
 
@@ -15,7 +16,7 @@ export const AuthProvider = ({children}) => {
             }
 
             try {
-                const response = await fetch("http://localhost:8000/verify-token", {
+                const response = await fetch(`${API_URL}/verify-token`, {
                     headers: {
                         "Authorization": `Bearer ${token}`
                     }

@@ -1,6 +1,7 @@
 import {useEffect, useState} from "react";
 import Layout from "../components/Layout.jsx";
 import {useParams} from "react-router";
+import {API_URL} from "../../utils/api.js";
 
 export default function SentencePage() {
     const {sentenceId} = useParams();
@@ -9,7 +10,7 @@ export default function SentencePage() {
     useEffect(() => {
         const fetchData = async () => {
             console.log(sentenceId)
-            const response = await fetch(`http://localhost:8000/sentence/${sentenceId}`);
+            const response = await fetch(`${API_URL}/sentence/${sentenceId}`);
             const data = await response.json();
             setSentence(data);
             console.log(data)

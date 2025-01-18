@@ -3,6 +3,7 @@ import {MagnifyingGlassIcon} from '@heroicons/react/24/outline'
 import {useEffect, useState} from "react";
 import Layout from "../components/Layout.jsx";
 import {Link} from "react-router-dom";
+import {API_URL} from "../../utils/api.js";
 
 export default function SentencesPage() {
     const [data, setData] = useState([]);
@@ -13,8 +14,8 @@ export default function SentencesPage() {
             try {
                 const response = await fetch(
                     query
-                        ? `http://localhost:8000/sentences?keyword=${query}`
-                        : "http://localhost:8000/sentences"
+                        ? `${API_URL}/sentences?keyword=${query}`
+                        : `${API_URL}/sentences`
                 );
                 const result = await response.json();
                 console.log(result);
