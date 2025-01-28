@@ -39,9 +39,16 @@ export default function AnalyzerPage() {
                 <TextArea onTextSubmit={handleSubmit} text={text} setText={setText}
                           action={"analyze"}/>
 
-                <div className="mt-10 text-center text-2xl text-orange-700">
-                    {/*{data && JSON.stringify(data.text)}*/}
-                    {data && JSON.stringify(data["counts"])}
+                <div className="mt-10 text-2xl text-gray-700">
+                    <ul className="grid grid-cols-5 gap-5">
+                        {data && data.map(entry => (
+                            <li key={entry["word"]} className="border rounded-md text-center">
+                                <div>Word: {entry["word"]}</div>
+                                <div>Count: {entry["count"]}</div>
+                                <div>HSK Level: {entry["hsk_level"] || "N/A"}</div>
+                            </li>
+                        ))}
+                    </ul>
                 </div>
             </Layout>
         </>

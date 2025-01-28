@@ -35,7 +35,12 @@ def get_sentence(db: Session, sentence_id: int):
     return db.query(models.Sentence).filter(models.Sentence.id == sentence_id).first()
 
 
-def get_words_by_level(db: Session, level: int):
+def get_hsk_words(db: Session):
+    """Get all HSK words"""
+    return db.query(models.Word).all()
+
+
+def get_hsk_words_by_level(db: Session, level: int):
     """Get all words for an HSK level"""
     return db.query(models.Word).filter(models.Word.level_id == level).all()
 

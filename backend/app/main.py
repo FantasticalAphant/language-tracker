@@ -147,7 +147,7 @@ def get_hsk_level_words(level: int, db: Session = Depends(get_db)):
     if cached_result:
         return pickle.loads(cached_result)
 
-    hsk_level = crud.get_words_by_level(db, level)
+    hsk_level = crud.get_hsk_words_by_level(db, level)
     if not hsk_level:
         raise HTTPException(status_code=404, detail="HSK Level not found")
 
@@ -195,18 +195,32 @@ class TextInput(BaseModel):
 
 
 @router.post("/analyzer", tags=["analyzer"])
-def analyze_text_submit(user_input: TextInput):
+def analyze_text_submit(user_input: TextInput, db: Session = Depends(get_db)):
     """Split and analyze user text."""
     try:
         received_text = user_input.text
         split_text = helpers.split_text(received_text)
+
         word_counts = collections.Counter(split_text)
 
-        return {
-            "message": "Text received successfully",
-            "text": split_text,
-            "counts": word_counts.most_common()  # return words with counts in descending order
-        }
+        # get all words at once to avoid the N+1 query problem
+        hsk_words = crud.get_hsk_words(db)
+
+        words_sorted_by_frequency = word_counts.most_common()
+
+        # create a lookup table mapping simplified form to hsk level
+        hsk_lookup = {word.simplified: word.level_id for word in hsk_words}
+
+        word_info = [
+            {
+                "word": word,
+                "count": count,
+                "hsk_level": hsk_lookup.get(word)  # this returns None for non-HSK words
+            }
+            for word, count in words_sorted_by_frequency
+        ]
+
+        return word_info
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
