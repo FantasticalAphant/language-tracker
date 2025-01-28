@@ -31,9 +31,15 @@ jobs:
         uses: actions/checkout@v4
         with:
           lfs: true
-          
-      - name: Checkout LFS objects
-        run: git lfs checkout
+
+      - name: Cache LFS database
+        uses: actions/cache@v4
+        with:
+          path: .git/lfs/objects
+          key: lfs-${{ hashFiles('.git/lfs/objects/**') }}
+
+      - name: Git LFS Pull
+        run: git lfs pull
 
       - name: Set up Python 3.12
         uses: actions/setup-python@v3
