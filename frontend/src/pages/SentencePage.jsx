@@ -19,7 +19,8 @@ export default function SentencePage() {
     return (
         <div>
             <Layout>
-                <p className="text-3xl">{sentence.text}</p>
+                <p className="text-3xl">{sentence["text"]}</p>
+                <p className="text-3xl">{sentence["translated_sentence"]}</p>
             </Layout>
         </div>
     )

@@ -57,11 +57,11 @@ TRANSLATION_API_KEY = os.getenv("TRANSLATION_API_KEY")
 TRANSLATION_API_URL = os.getenv("TRANSLATION_API_URL")
 
 
-def translate_text(text):
+def translate_text(text: str, target_lang: str):
     params = {
         "auth_key": TRANSLATION_API_KEY,
         "text": text,
-        "target_lang": "ZH",
+        "target_lang": target_lang,
     }
 
     response = requests.post(TRANSLATION_API_URL, data=params)
