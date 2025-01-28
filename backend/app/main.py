@@ -1,3 +1,4 @@
+import collections
 import os
 import pickle
 from datetime import timedelta
@@ -193,17 +194,19 @@ class TextInput(BaseModel):
     text: str
 
 
-# TODO: Combine the next two submit_text functions
-# POST endpoint to receive text from the React form
 @router.post("/analyzer", tags=["analyzer"])
-def submit_text(user_input: TextInput):
+def analyze_text_submit(user_input: TextInput):
     """Split and analyze user text."""
     try:
         received_text = user_input.text
         split_text = helpers.split_text(received_text)
+        word_counts = collections.Counter(split_text)
 
-        # Return a success message or any other response
-        return {"message": "Text received successfully", "text": split_text}
+        return {
+            "message": "Text received successfully",
+            "text": split_text,
+            "counts": word_counts.most_common()  # return words with counts in descending order
+        }
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))

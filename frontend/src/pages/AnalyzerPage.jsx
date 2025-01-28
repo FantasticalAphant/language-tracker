@@ -40,7 +40,8 @@ export default function AnalyzerPage() {
                           action={"analyze"}/>
 
                 <div className="mt-10 text-center text-2xl text-orange-700">
-                    {data && JSON.stringify(data.text)}
+                    {/*{data && JSON.stringify(data.text)}*/}
+                    {data && JSON.stringify(data["counts"])}
                 </div>
             </Layout>
         </>
