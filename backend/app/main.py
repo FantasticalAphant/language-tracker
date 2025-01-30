@@ -247,8 +247,7 @@ def submit_text(user_input: TextInput):
         # translate to chinese
         translated_text = helpers.translate_text(received_text, target_lang="ZH")
 
-        # Return a success message or any other response
-        return {"message": "Text received successfully", "text": translated_text}
+        return {"original_text": received_text, "translated_text": translated_text}
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))

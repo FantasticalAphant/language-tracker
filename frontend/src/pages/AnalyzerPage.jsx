@@ -7,7 +7,7 @@ import {useLocalStorage} from "react-use";
 export default function AnalyzerPage() {
     const [data, setData] = useState([])
     const [text, setText] = useState('');
-    const [history, setHistory] = useLocalStorage("history", []);
+    const [history, setHistory] = useLocalStorage("analyzerHistory", []);
 
     const handleSubmit = async (event) => {
         event.preventDefault();

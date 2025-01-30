@@ -2,10 +2,12 @@ import {useState} from "react";
 import TextArea from "../components/TextArea.jsx";
 import Layout from "../components/Layout.jsx";
 import {API_URL} from "../../utils/api.js";
+import {useLocalStorage} from "react-use";
 
 export default function TranslatorPage() {
     const [data, setData] = useState([])
     const [text, setText] = useState('');
+    const [history, setHistory] = useLocalStorage("translatorHistory", [])
 
     const handleSubmit = async (event) => {
         event.preventDefault();
@@ -25,6 +27,10 @@ export default function TranslatorPage() {
 
             const data = await response.json();
             setData(data)
+
+            const prevHistory = history;
+            setHistory([...prevHistory, data].slice(-9));
+
             setText("");
         } catch (error) {
             console.error('Error:', error);
@@ -38,7 +44,14 @@ export default function TranslatorPage() {
                           action={"translate"}/>
 
                 <div className="mt-10 text-center text-2xl text-orange-700">
-                    {data && data.text}
+                    {data && data["translated_text"]}
+                </div>
+
+                <div className="text-3xl">
+                    History:
+                    {history.map(item => (
+                        JSON.stringify(item)
+                    ))}
                 </div>
             </Layout>
         </>
