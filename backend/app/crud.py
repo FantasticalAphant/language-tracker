@@ -4,7 +4,7 @@ from sqlalchemy import func, tuple_
 from sqlalchemy.orm import Session
 
 import backend.app.models as models
-from backend.app.helpers import is_chinese_script, hash_password
+from backend.app.helpers import is_chinese_script, hash_password, parse_pinyin
 
 
 def create_user(db: Session, username: str, password: str):
@@ -68,9 +68,6 @@ def get_dictionary_entries(db: Session, limit: int = 20, keyword: str = None):
     # probably best to implement pinyin search first since this supposedly targeting mandarin learners
 
     # search the entries table if trying to find matching characters
-
-    pinyin_list = ["ji1", "lei3"]
-
     # otherwise, search through the pronunciations table
 
     # TODO: clean up this logic; it's way too messy
@@ -82,6 +79,7 @@ def get_dictionary_entries(db: Session, limit: int = 20, keyword: str = None):
             # the input would be a list of the pinyin components
             # so it would basically be ["ji1", "lei3"] or ["ji", "lei"]
             # it would then match each of these parts to the index e.g., ji -> 0 and lei -> 1
+            pinyin_list = parse_pinyin(keyword)
 
             position_pinyin_pairs = [(i, p) for i, p in enumerate(pinyin_list)]
 
