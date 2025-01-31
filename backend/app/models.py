@@ -65,7 +65,7 @@ class Entry(Base):
         return (
             f"{self.simplified} ({self.traditional}) "
             f"{' '.join(p.pinyin for p in self.pronunciations)} - "
-            f"{'; '.join(d.text for d in self.definitions)}"
+            f"{'; '.join(d.definition for d in self.definitions)}"
         )
 
 
