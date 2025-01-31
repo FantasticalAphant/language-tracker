@@ -1,9 +1,10 @@
 from datetime import datetime
 
+from sqlalchemy import func, tuple_
 from sqlalchemy.orm import Session
 
 import backend.app.models as models
-from backend.app.helpers import is_chinese_script, hash_password
+from backend.app.helpers import is_chinese_script, hash_password, parse_pinyin
 
 
 def create_user(db: Session, username: str, password: str):
@@ -48,17 +49,56 @@ def get_hsk_words_by_level(db: Session, level: int):
 def get_dictionary_entries(db: Session, limit: int = 20, keyword: str = None):
     """Get all dictionary entries"""
     # TODO: search character or pinyin depending on keyword type
-    query = db.query(models.Entry)
 
+    # need to parse the search string and then map that to the individual components
+    # for example, ji1lei3 (积累) should be parsed into "ji1" and "lei3"
+    # note that the position of each part is also important
+    # so ji1 should be part 0 and lei3 should be part 1 with the same entry id
+    # this mapping with designate a matching result and would be part of the search results
+
+    # if the user omits tones, then the search query would be jilei
+    # the hardest part would probably be parsing this output
+    # find the matching pinyin would just be a matter of excluding the tones from database searches
+    # "ji" and "lei" would just be matched with starts_with() or its equivalent
+
+    # another case would be "ji lei"
+    # you can just split along whitespace for this case
+
+    # TODO: figure out how to search if there is hanzi mixed with pinyin
+    # probably best to implement pinyin search first since this supposedly targeting mandarin learners
+
+    # search the entries table if trying to find matching characters
+    # otherwise, search through the pronunciations table
+
+    # TODO: clean up this logic; it's way too messy
     if keyword:  # search by query if it exists
         if is_chinese_script(keyword):
-            query = query.filter(models.Entry.simplified.contains(keyword))
+            query = db.query(models.Entry).filter(models.Entry.simplified.contains(keyword))
+            return query.limit(limit).all()
         else:
-            query = query.join(models.Entry.pronunciations).filter(
-                models.Pronunciation.pinyin.contains(keyword)
-            )
+            # the input would be a list of the pinyin components
+            # so it would basically be ["ji1", "lei3"] or ["ji", "lei"]
+            # it would then match each of these parts to the index e.g., ji -> 0 and lei -> 1
+            pinyin_list = parse_pinyin(keyword)
 
-    return query.limit(limit).all()
+            position_pinyin_pairs = [(i, p) for i, p in enumerate(pinyin_list)]
+
+            query = (
+                db.query(models.Pronunciation.entry_id)
+                .filter(
+                    # use tuple to make sure that both position and pinyin match
+                    tuple_(models.Pronunciation.position, models.Pronunciation.pinyin)
+                    .in_(position_pinyin_pairs)
+                )
+                .group_by(models.Pronunciation.entry_id)
+                .having(func.count(models.Pronunciation.entry_id) == len(pinyin_list))  # for complete matches
+            )
+    else:
+        query = db.query(models.Entry)
+        return query.limit(limit).all()
+
+    entries = [row.entry_id for row in query.all()]
+    return db.query(models.Entry).filter(models.Entry.id.in_(entries)).all()  # return as list of Entries
 
 
 def create_word_list(db: Session, name: str, user_id: int):

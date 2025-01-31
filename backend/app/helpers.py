@@ -1,10 +1,12 @@
 import os
+import re
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 import jieba
 import jwt
 import requests
+import zhon
 from dotenv import load_dotenv
 from passlib.context import CryptContext
 
@@ -87,3 +89,7 @@ def is_chinese_script(characters):
             return True
 
     return False
+
+
+def parse_pinyin(pinyin: str) -> list[str]:
+    return re.findall(zhon.pinyin.num_syl, pinyin, re.IGNORECASE)
