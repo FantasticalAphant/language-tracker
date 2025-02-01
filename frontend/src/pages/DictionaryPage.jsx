@@ -25,7 +25,14 @@ export default function DictionaryPage() {
             }
         };
 
-        fetchData();
+        if (query) {
+            const timerId = setTimeout(fetchData, 500);
+            return () => clearTimeout(timerId);
+        } else {
+            // don't add delay when user clears search field
+            fetchData();
+        }
+
     }, [query]);
 
     const name = "Dictionary";

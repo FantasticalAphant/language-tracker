@@ -1,6 +1,5 @@
 from datetime import datetime
 
-from sqlalchemy import func, tuple_
 from sqlalchemy.orm import Session
 
 import backend.app.models as models
@@ -48,7 +47,6 @@ def get_hsk_words_by_level(db: Session, level: int):
 
 def get_dictionary_entries(db: Session, limit: int = 20, keyword: str = None):
     """Get all dictionary entries"""
-    # TODO: search character or pinyin depending on keyword type
 
     # need to parse the search string and then map that to the individual components
     # for example, ji1lei3 (积累) should be parsed into "ji1" and "lei3"
@@ -70,6 +68,12 @@ def get_dictionary_entries(db: Session, limit: int = 20, keyword: str = None):
     # search the entries table if trying to find matching characters
     # otherwise, search through the pronunciations table
 
+    # TODO:
+    # prioritize full matches over partial matches e.g., "zhe" lists "zhe4" instead of "zheng4"
+    # words with fewer syllables should be listed before longer ones e.g., "zhe" before "zheshi" for keyword "zhe"
+    # this has lower precedence than the other two - sorting by frequency (this requires a frequency list)
+    #
+
     # TODO: clean up this logic; it's way too messy
     if keyword:  # search by query if it exists
         if is_chinese_script(keyword):
@@ -79,20 +83,21 @@ def get_dictionary_entries(db: Session, limit: int = 20, keyword: str = None):
             # the input would be a list of the pinyin components
             # so it would basically be ["ji1", "lei3"] or ["ji", "lei"]
             # it would then match each of these parts to the index e.g., ji -> 0 and lei -> 1
+
             pinyin_list = parse_pinyin(keyword)
 
             position_pinyin_pairs = [(i, p) for i, p in enumerate(pinyin_list)]
 
-            query = (
-                db.query(models.Pronunciation.entry_id)
-                .filter(
-                    # use tuple to make sure that both position and pinyin match
-                    tuple_(models.Pronunciation.position, models.Pronunciation.pinyin)
-                    .in_(position_pinyin_pairs)
+            query = db.query(models.Pronunciation.entry_id)
+            for position, pinyin in position_pinyin_pairs:
+                # running query multiple times shouldn't be too much of an issue since pairs are limited
+                query = query.filter(
+                    # make sure that both the position and the pinyin match
+                    models.Pronunciation.position == position,
+                    models.Pronunciation.pinyin.like(f'{pinyin}%')  # starts_with instead of exact match
+                    # e.g., "hao" keyword should also match "hao3" in the database
                 )
-                .group_by(models.Pronunciation.entry_id)
-                .having(func.count(models.Pronunciation.entry_id) == len(pinyin_list))  # for complete matches
-            )
+
     else:
         query = db.query(models.Entry)
         return query.limit(limit).all()
