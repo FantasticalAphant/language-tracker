@@ -1,6 +1,7 @@
 import {PlusIcon} from "@heroicons/react/20/solid";
 import WordListModal from "./WordListModal.jsx";
 import {useState} from "react";
+import {useAuth} from "../contexts/UseAuth.jsx";
 
 const headings = ['Simplified', 'Traditional', 'Pinyin', 'Definition'];
 
@@ -8,6 +9,8 @@ const headings = ['Simplified', 'Traditional', 'Pinyin', 'Definition'];
 // eslint-disable-next-line react/prop-types
 export default function List({words, isOpen, setIsOpen}) {
     const [currentWordId, setCurrentWordId] = useState(null);
+
+    const {isAuthenticated} = useAuth();
 
     const handleOpenModal = (wordId) => {
         setCurrentWordId(wordId);
@@ -48,7 +51,7 @@ export default function List({words, isOpen, setIsOpen}) {
                                 </td>
                             </tr>
                             {
-                                setIsOpen &&
+                                setIsOpen && isAuthenticated &&
                                 <button
                                     onClick={() => handleOpenModal(word["id"])}
                                     className="rounded-full bg-indigo-600 p-1.5 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
