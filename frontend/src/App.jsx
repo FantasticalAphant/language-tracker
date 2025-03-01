@@ -12,6 +12,7 @@ import SentencePage from "./pages/SentencePage.jsx";
 import LogInPage from "./pages/LogInPage.jsx";
 import {AuthProvider, ProtectedRoute} from "./contexts/AuthContext.jsx";
 import SignUpPage from "./pages/SignUpPage.jsx";
+import VideoTranscriptsPage from "./pages/VideoTranscriptsPage.jsx";
 
 function App() {
 
@@ -33,6 +34,7 @@ function App() {
                             <Route path={"/sentences/:sentenceId"} element={<SentencePage/>}/>
                             <Route path={"/analyzer"} element={<AnalyzerPage/>}/>
                             <Route path={"/translator"} element={<TranslatorPage/>}/>
+                            <Route path={"/video_transcripts"} element={<VideoTranscriptsPage/>}/>
                             <Route
                                 path={"/word_lists/:listId"}
                                 element={
