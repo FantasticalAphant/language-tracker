@@ -15,7 +15,7 @@ from jwt import InvalidTokenError
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
 from starlette import status
-from youtube_transcript_api import YouTubeTranscriptApi
+from youtube_transcript_api import YouTubeTranscriptApi, NoTranscriptFound, NoTranscriptAvailable, TranscriptsDisabled
 
 import backend.app.crud as crud
 import backend.app.helpers as helpers
@@ -352,7 +352,12 @@ def get_transcription(video_url: str = "v=dQw4w9WgXcQ"):
     video_id = helpers.get_video_id(video_url)
     if video_id is None:
         raise HTTPException(status_code=400, detail="Invalid URL")
-    YouTubeTranscriptApi.get_transcript(video_id, languages=["zh"])
+    try:
+        return YouTubeTranscriptApi.get_transcript(video_id, languages=["zh"])
+    except (NoTranscriptFound, NoTranscriptAvailable, TranscriptsDisabled):
+        raise HTTPException(status_code=404, detail="No transcript available for this video")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"An error occurred: {str(e)}")
 
 
 app.include_router(router)
