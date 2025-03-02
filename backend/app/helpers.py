@@ -93,3 +93,12 @@ def is_chinese_script(characters):
 
 def parse_pinyin(pinyin: str) -> list[str]:
     return re.findall(zhon.pinyin.num_syl, pinyin, re.IGNORECASE)
+
+
+def get_video_id(youtube_url):
+    pattern = r'(?:v=|\/embed\/|\/watch\?v=|\/watch\?.+&v=|youtu.be\/)([^#\&\?\/]{11})'
+
+    match = re.search(pattern, youtube_url)
+    if match:
+        return match.group(1)
+    return None
