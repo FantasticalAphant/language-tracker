@@ -20,8 +20,6 @@ export default function VideoTranscriptsPage() {
 
             const data = await response.json();
 
-            console.log(data);
-
             setTranscript(data);
             setUrl("");
         } catch (err) {
