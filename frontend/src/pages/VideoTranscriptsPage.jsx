@@ -4,7 +4,7 @@ import {API_URL} from "../../utils/api.js";
 
 export default function VideoTranscriptsPage() {
     const [url, setUrl] = useState("");
-    const [transcript, setTranscript] = useState([]);
+    const [transcriptInfo, setTranscriptInfo] = useState({});
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -20,8 +20,7 @@ export default function VideoTranscriptsPage() {
 
             const data = await response.json();
 
-            setTranscript(data);
-            console.log(transcript)
+            setTranscriptInfo(data);
             setUrl("");
         } catch (err) {
             console.error(err);
@@ -51,13 +50,25 @@ export default function VideoTranscriptsPage() {
                 </form>
             </div>
 
-            <div className="mt-3">
+            <div className="my-4 justify-self-center">
+                {transcriptInfo["id"] && <iframe
+                    width="560"
+                    height="315"
+                    src={`https://www.youtube.com/embed/${transcriptInfo["id"]}`}
+                    title="YouTube video player"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                    allowFullScreen>
+                </iframe>}
+            </div>
+
+            <div>
                 <ol className="list-decimal space-y-2">
-                    {transcript.map((subtitle, index) => (<li key={index}>
-                        <p>Text: {subtitle["text"]}</p>
-                        <p>Start: {subtitle["start"]}</p>
-                        <p>Duration: {subtitle["duration"]}</p>
-                    </li>))}
+                    {transcriptInfo["transcript"] && transcriptInfo["transcript"].map((subtitle, index) => (
+                        <li key={index}>
+                            <p>Text: {subtitle["text"]}</p>
+                            <p>Start: {subtitle["start"]}</p>
+                            <p>Duration: {subtitle["duration"]}</p>
+                        </li>))}
                 </ol>
             </div>
         </Layout>)
