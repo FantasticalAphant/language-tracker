@@ -33,6 +33,15 @@ export default function VideoTranscriptsPage() {
                 Get transcripts for videos on YouTube
             </div>
 
+            {transcriptInfo["id"] &&
+                <button
+                    type="button"
+                    onClick={() => setTranscriptInfo({})}
+                    className="bg-amber-700 p-1 rounded text-white">
+                    Clear Video
+                </button>
+            }
+
             {!transcriptInfo["id"] &&
                 <div className="mt-5 grid">
                     <form onSubmit={e => handleSubmit(e)}>
