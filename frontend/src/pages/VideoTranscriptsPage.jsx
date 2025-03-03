@@ -4,7 +4,7 @@ import {API_URL} from "../../utils/api.js";
 
 export default function VideoTranscriptsPage() {
     const [url, setUrl] = useState("");
-    const [transcript, setTranscript] = useState();
+    const [transcript, setTranscript] = useState([]);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -21,6 +21,7 @@ export default function VideoTranscriptsPage() {
             const data = await response.json();
 
             setTranscript(data);
+            console.log(transcript)
             setUrl("");
         } catch (err) {
             console.error(err);
@@ -49,8 +50,15 @@ export default function VideoTranscriptsPage() {
                     </button>
                 </form>
             </div>
-            <div>
-                {JSON.stringify(transcript)}
+
+            <div className="mt-3">
+                <ol className="list-decimal space-y-2">
+                    {transcript.map((subtitle, index) => (<li key={index}>
+                        <p>Text: {subtitle["text"]}</p>
+                        <p>Start: {subtitle["start"]}</p>
+                        <p>Duration: {subtitle["duration"]}</p>
+                    </li>))}
+                </ol>
             </div>
         </Layout>)
 }
