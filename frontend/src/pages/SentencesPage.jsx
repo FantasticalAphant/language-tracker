@@ -4,10 +4,23 @@ import {useEffect, useState} from "react";
 import Layout from "../components/Layout.jsx";
 import {Link} from "react-router-dom";
 import {API_URL} from "../../utils/api.js";
+import {useNavigate} from "react-router";
+
+function getRandomInt(min, max) {
+    min = Math.ceil(min);
+    max = Math.floor(max);
+    return Math.floor(Math.random() * (max - min) + min);
+}
 
 export default function SentencesPage() {
     const [data, setData] = useState([]);
     const [query, setQuery] = useState("");
+    const navigate = useNavigate();
+
+    const navigateRandomSentence = () => {
+        const sentenceId = getRandomInt(1, 73513)
+        navigate(`/sentences/${sentenceId}`)
+    }
 
     useEffect(() => {
         const fetchData = async () => {
@@ -47,7 +60,16 @@ export default function SentencesPage() {
                         />
                     </div>
                 </Combobox>
-                <div className="mt-3">
+
+                <button
+                    type="buttton"
+                    className="my-3 bg-emerald-100 p-1 rounded-md shadow font-semibold hover:bg-emerald-200"
+                    onClick={navigateRandomSentence}
+                >
+                    Random Sentence
+                </button>
+
+                <div>
                     <ul>
                         {Array.isArray(data) && data.map((item, index) => (
                             <li key={index}>
