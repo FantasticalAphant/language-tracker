@@ -196,7 +196,28 @@ def test_get_dictionary_entries_limit(client):
 @pytest.mark.parametrize(
     "initial_text,parsed_text",
     [
-        ("这是个句子。", ["这", "是", "个", "句子"]),
+        ("这是个句子。", [
+            {
+                "word": "这",
+                "count": 1,
+                "hsk_level": 1
+            },
+            {
+                "word": "是",
+                "count": 1,
+                "hsk_level": 1
+            },
+            {
+                "word": "个",
+                "count": 1,
+                "hsk_level": 1
+            },
+            {
+                "word": "句子",
+                "count": 1,
+                "hsk_level": 3
+            }
+        ]),
     ],
 )
 def test_analyzer_submit_text(client, initial_text, parsed_text):
@@ -207,22 +228,22 @@ def test_analyzer_submit_text(client, initial_text, parsed_text):
         },
     )
     assert response.status_code == 200
-    assert response.json()["text"] == parsed_text
+    assert response.json() == parsed_text
 
 
 @pytest.mark.parametrize(
     "initial_text,parsed_text",
     [
         (
-            "I wish I didn't have to live a life full of regrets.",
-            "我希望我的人生不必充满遗憾。",
+                "I wish I didn't have to live a life full of regrets.",
+                "我希望我的人生不必充满遗憾。",
         ),
     ],
 )
 def test_translator_submit_text(client, initial_text, parsed_text):
     response = client.post("/translator", json={"text": initial_text})
     assert response.status_code == 200
-    assert response.json()["text"] == parsed_text
+    assert response.json()["translated_text"] == parsed_text
 
 
 def test_read_wordlist_without_auth(client, created_wordlist):
