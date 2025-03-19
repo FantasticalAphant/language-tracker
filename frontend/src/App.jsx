@@ -13,6 +13,7 @@ import LogInPage from "./pages/LogInPage.jsx";
 import {AuthProvider, ProtectedRoute} from "./contexts/AuthContext.jsx";
 import SignUpPage from "./pages/SignUpPage.jsx";
 import VideoTranscriptsPage from "./pages/VideoTranscriptsPage.jsx";
+import ReaderPage from "./pages/ReaderPage.jsx";
 
 function App() {
 
@@ -35,6 +36,7 @@ function App() {
                             <Route path={"/analyzer"} element={<AnalyzerPage/>}/>
                             <Route path={"/translator"} element={<TranslatorPage/>}/>
                             <Route path={"/video_transcripts"} element={<VideoTranscriptsPage/>}/>
+                            <Route path={"/reader"} element={<ReaderPage/>}/>
                             <Route
                                 path={"/word_lists/:listId"}
                                 element={

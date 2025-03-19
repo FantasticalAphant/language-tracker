@@ -17,6 +17,7 @@ export default function Navbar({currentTab}) {
         {name: 'Sentences', href: '/sentences', current: false},
         {name: 'Analyzer', href: '/analyzer', current: false},
         {name: 'Translator', href: '/translator', current: false},
+        {name: 'Reader', href: '/reader', current: false},
         {name: 'Video Transcripts', href: '/video_transcripts', current: false},
         {name: 'Word Lists', href: '/word_lists', current: false},
     ].map(item => ({
